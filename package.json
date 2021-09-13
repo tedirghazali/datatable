@@ -1,0 +1,24 @@
+{
+  "name": "edgia",
+  "version": "0.0.1-development1",
+  "scripts": {
+    "dev": "node render.js && vite serve routes",
+    "build": "node render.js && vite build",
+    "serve": "node render.js && vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tedirghazali/edgia.git"
+  },
+  "keywords": ["ssg", "static site generator", "documentation"],
+  "author": "Tedir Ghazali",
+  "license": "SEE LICENSE IN license.txt",
+  "bugs": {
+    "url": "https://github.com/tedirghazali/edgia/issues"
+  },
+  "homepage": "https://github.com/tedirghazali/edgia#readme",
+  "devDependencies": {
+    "vite": "^2.5.4",
+    "edge.js": "^5.3.2"
+  }
+}
