@@ -1,3 +1,4 @@
 module.exports = {
-  renderDir: 'routes'
+  renderDir: 'routes',
+  assetDir: ['src/assets', 'src/components']
 }

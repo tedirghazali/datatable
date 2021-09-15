@@ -1,18 +1,20 @@
+const fs = require('fs')
 const { resolve } = require('path')
 const { defineConfig } = require('vite')
 const settings = require('./settings.js')
 
-const routes = fs.readdirSync(path.resolve(__dirname, settings.renderDir))
+const routes = fs.readdirSync(resolve(__dirname, settings.renderDir))
 const inputRoutes = {}
 
 for(let route of routes) {
-  const inputName = route.split('/')[0].replace(/\.html$/, '').toLowerCase()
-  inputRoutes[inputName] = resolve(__dirname, route)
+  const inputName = route.replace(/\.html$/, '').toLowerCase()
+  inputRoutes[inputName] = resolve(__dirname, `${settings.renderDir}/${route}`)
 }
 
 module.exports = defineConfig({
   build: {
-    outDir: 'public',
+    outDir: 'dist',
+    assetsDir: settings.renderDir,
     rollupOptions: {
       input: inputRoutes
     }

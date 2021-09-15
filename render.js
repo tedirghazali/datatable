@@ -7,19 +7,21 @@ const settings = require('./settings.js')
 edge.mount(join(__dirname, 'src/layouts'))
 edge.mount(join(__dirname, 'src/pages'))
 
+if (fs.existsSync(resolve(__dirname, settings.renderDir))) {
+  fs.rmdirSync(resolve(__dirname, settings.renderDir), { recursive: true });
+}
+fs.mkdirSync(resolve(__dirname, settings.renderDir));
+fs.chmodSync(resolve(__dirname, settings.renderDir), 0o777)
+
 const routes = fs.readdirSync(resolve(__dirname, 'src/pages'))
 
 ;(async () => {
   
   for(let route of routes) {
-    const html = await edge.render(route, store)
-    const fileName = route.replace(/\.edge$/, '').toLowerCase()
+    const fileName = route.replace(/\.edge$/, '')
+    const html = await edge.render(fileName, store)
     
-    if (!fs.existsSync(resolve(__dirname, settings.renderDir))) {
-      fs.mkdirSync(resolve(__dirname, settings.renderDir));
-    }
-    
-    fs.writeFileSync(resolve(__dirname, `${settings.renderDir}/${fileName}.html`), html)
+    fs.writeFileSync(resolve(__dirname, `${settings.renderDir}/${fileName.toLowerCase()}.html`), html)
   }
   
 })()

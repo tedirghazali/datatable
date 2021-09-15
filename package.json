@@ -4,13 +4,18 @@
   "scripts": {
     "dev": "node render.js && vite serve routes",
     "build": "node render.js && vite build",
-    "serve": "node render.js && vite preview"
+    "preview": "node render.js && vite preview",
+    "serve": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tedirghazali/edgia.git"
   },
-  "keywords": ["ssg", "static site generator", "documentation"],
+  "keywords": [
+    "ssg",
+    "static site generator",
+    "documentation"
+  ],
   "author": "Tedir Ghazali",
   "license": "SEE LICENSE IN license.txt",
   "bugs": {
@@ -18,7 +23,15 @@
   },
   "homepage": "https://github.com/tedirghazali/edgia#readme",
   "devDependencies": {
-    "vite": "^2.5.4",
-    "edge.js": "^5.3.2"
+    "@vitejs/plugin-vue": "^1.6.2",
+    "@vue/compiler-sfc": "^3.2.11",
+    "edge.js": "^5.3.2",
+    "vite": "^2.5.4"
+  },
+  "dependencies": {
+    "alga-css": "^1.0.0-alpha1",
+    "alga-js": "^0.0.8",
+    "express": "^4.17.1",
+    "vue": "^3.2.11"
   }
 }
