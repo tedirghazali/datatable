@@ -1,2 +1,2 @@
-# edgia
-Edgia is a static site generator built on top of Vite.js and Edge.js
+# TG DataTable
+TG DataTable is a Vue 3 DataTable
