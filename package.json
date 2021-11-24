@@ -1,6 +1,16 @@
 {
-  "name": "@tg/datatable",
+  "name": "vidie-datatable",
   "version": "0.0.1-wood1",
+  "description": "Vidie DataTable is a Vue 3 DataTable",
+  "main": "dist/vidie-datatable.umd.js",
+  "module": "dist/vidie-datatable.es.js",
+  "unpkg": "dist/vidie-datatable.umd.js",
+  "exports": {
+    ".": {
+      "import": "dist/vidie-datatable.es.js",
+      "require": "dist/vidie-datatable.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
