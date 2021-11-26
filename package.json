@@ -1,20 +1,20 @@
 {
-  "name": "vidie-datatable",
+  "name": "datatable-x",
   "version": "0.0.1-wood1",
-  "description": "Vidie DataTable is a Vue 3 DataTable",
-  "main": "dist/vidie-datatable.umd.js",
-  "module": "dist/vidie-datatable.es.js",
-  "unpkg": "dist/vidie-datatable.umd.js",
+  "description": "DataTable X is a Vue 3 & Web Component DataTable",
+  "main": "dist/datatable-x.umd.js",
+  "module": "dist/datatable-x.es.js",
+  "unpkg": "dist/datatable-x.umd.js",
   "exports": {
     ".": {
-      "import": "dist/vidie-datatable.es.js",
-      "require": "dist/vidie-datatable.umd.js"
+      "import": "dist/datatable-x.es.js",
+      "require": "dist/datatable-x.umd.js"
     }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "dev-vue": "vite --config vite-vue-config.ts",
+    "build-vue": "vue-tsc --noEmit && vite build --config vite-vue-config.ts",
+    "preview": "vite preview --config vite-vue-config.ts"
   },
   "repository": {
     "type": "git",
