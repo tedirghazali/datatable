@@ -1,22 +1,31 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import TableData from './components/TableData.vue'
 import rawEntries from './assets/raw-entries.js'
 
 const columns = [
-  [
-    {prop: 'id', text: 'ID', type: 'text'},
-    {prop: 'name', text: 'Name', type: 'text'},
-    {prop: 'position', text: 'Position', type: 'text'},
-    {prop: 'office', text: 'Office', type: 'text'},
-    {prop: 'extension', text: 'Exten.', type: 'text'},
-    {prop: 'startdate', text: 'Start Date', type: 'text'},
-    {prop: 'salary', text: 'Salary', type: 'text'}
-  ]
+  { prop: 'id', text: 'ID', type: 'checkbox' },
+  { prop: 'name', text: 'Name', type: 'text', filter: true },
+  { prop: 'position', text: 'Position', type: 'text', filter: true },
+  { prop: 'office', text: 'Office', type: 'text', filter: true },
+  { prop: 'extension', text: 'Exten.', type: 'text', filter: true },
+  { prop: 'startdate', text: 'Start Date', type: 'text', filter: true },
+  { prop: 'salary', text: 'Salary', type: 'text', filter: true }
 ]
+
+const checks = ref([])
+const filters = ref({})
+const checkedRows = (rows: any[]) => {
+  checks.value = rows
+}
+const filterColumns = (columns: any) => {
+  filters.value = columns
+}
 </script>
 
 <template>
-  <TableData :columns="columns" :entries="rawEntries" />
+  {{ filters }}
+  <TableData :columns="columns" :entries="rawEntries" @checklist="checkedRows" :filter="true" @filter="filterColumns" />
 </template>
 
 <style>
@@ -68,5 +77,9 @@ const columns = [
     
 .tableResponsive {
   overflow-x: auto;
+}
+
+.input {
+  width: 100%;
 }
 </style>

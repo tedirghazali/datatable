@@ -1,2 +1,2 @@
-# TG DataTable
-TG DataTable is a Vue 3 DataTable
+# DataTable X
+DataTable X is a Vue 3 & Web Component DataTable
