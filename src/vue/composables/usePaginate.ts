@@ -53,4 +53,11 @@ export default function usePaginate(getEntries: Ref<any[]>, getLimitPerPage: Ref
     }
     return filterMax
   })
+  
+  return {
+    getOffset,
+    getPages,
+    paginatedEntries,
+    getPagination
+  }
 }

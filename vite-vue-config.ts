@@ -21,8 +21,8 @@ export default defineConfig(({ command, mode }) => {
       build: {
         lib: {
           entry: 'src/vue/lib.ts',
-          name: 'DataTableVue',
-          fileName: (format) => `datatable-vue.${format}.js`
+          name: 'TedirTable',
+          fileName: (format) => `tedir-table-vue.${format}.js`
         },
         rollupOptions: {
           external: ['vue'],

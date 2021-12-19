@@ -1,2 +1,2 @@
-# DataTable X
-DataTable X is a Vue 3 & Web Component DataTable
+# Tedir Table
+Tedir Table is a Vue 3 & Web Component DataTable

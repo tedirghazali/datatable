@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import TableData from './components/TableData.vue'
+import TedirTable from './components/TedirTable.vue'
 import rawEntries from './assets/raw-entries.js'
 
 const columns = [
@@ -12,20 +12,10 @@ const columns = [
   { prop: 'startdate', text: 'Start Date', type: 'text', filter: true },
   { prop: 'salary', text: 'Salary', type: 'text', filter: true }
 ]
-
-const checks = ref([])
-const filters = ref({})
-const checkedRows = (rows: any[]) => {
-  checks.value = rows
-}
-const filterColumns = (columns: any) => {
-  filters.value = columns
-}
 </script>
 
 <template>
-  {{ filters }}
-  <TableData :columns="columns" :entries="rawEntries" @checklist="checkedRows" :filter="true" @filter="filterColumns" />
+  <TedirTable :columns="columns" :entries="rawEntries" :filter="true" />
 </template>
 
 <style>
