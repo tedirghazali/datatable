@@ -2,18 +2,23 @@
   "name": "tedir-table",
   "version": "0.0.1-wood1",
   "description": "Tedir Table is a Vue 3 & Web Component DataTable",
-  "main": "dist/tedir-table-vue.umd.js",
-  "module": "dist/tedir-table-vue.es.js",
-  "unpkg": "dist/tedir-table-vue.umd.js",
+  "main": "dist/vue/tedir-table-vue.umd.js",
+  "module": "dist/vue/tedir-table-vue.es.js",
+  "unpkg": "dist/vue/tedir-table-vue.umd.js",
   "exports": {
     ".": {
-      "import": "dist/tedir-table-vue.es.js",
-      "require": "dist/tedir-table-vue.umd.js"
+      "import": "dist/vue/tedir-table-vue.es.js",
+      "require": "dist/vue/tedir-table-vue.umd.js"
+    },
+    "./web": {
+      "import": "dist/web/tedir-table-web.es.js",
+      "require": "dist/web/tedir-table-web.umd.js"
     }
   },
   "scripts": {
     "dev-vue": "vite --config vite-vue-config.ts",
     "build-vue": "vue-tsc --noEmit && vite build --config vite-vue-config.ts",
+    "build-web": "vue-tsc --noEmit && vite build --config vite-web-config.ts",
     "preview-vue": "vite preview --config vite-vue-config.ts"
   },
   "repository": {

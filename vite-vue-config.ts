@@ -24,6 +24,7 @@ export default defineConfig(({ command, mode }) => {
           name: 'TedirTable',
           fileName: (format) => `tedir-table-vue.${format}.js`
         },
+        outDir: 'dist/vue',
         rollupOptions: {
           external: ['vue'],
           output: {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, toRef } from 'vue'
-import TableData from './TableData.vue'
+import TableBox from './TableBox.vue'
+import PaginateBox from './PaginateBox.vue'
 import usePaginate from '../composables/usePaginate'
 
 const props = defineProps<{ 
@@ -34,5 +35,10 @@ const filterColumns = (columns: any) => {
 </script>
 
 <template>
-  <TableData :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" />
+  <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" />
+  <PaginateBox :items="getPagination" />
 </template>
+
+<style scoped>
+
+</style>
