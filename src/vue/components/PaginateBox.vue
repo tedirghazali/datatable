@@ -2,17 +2,19 @@
 interface Props {
   //@ts-ignore
   items?: Array<any>,
-  page?: number
+  modelValue?: number,
+  total: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   //@ts-ignore
   items: [],
-  page: 0
+  modelValue: 1,
+  total: 1
 })
 
 const emit = defineEmits<{
-  (e: 'update:page', number: number): void
+  (e: 'update:modelValue', value: number): void
 }>()
 </script>
 
@@ -20,39 +22,39 @@ const emit = defineEmits<{
   <nav class="paginate">
     <ul class="paginateBox">
       <li class="paginateItem">
-        <a href="#" class="paginateLink">
+        <span class="paginateLink" @click="emit('update:modelValue', 1);">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-left paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
             <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
-        </a>
+        </span>
       </li>
       <li class="paginateItem">
-        <a href="#" class="paginateLink">
+        <span class="paginateLink" @click="emit('update:modelValue', (Number(modelValue) > 1) ? Number(modelValue) - 1 : 1);">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-left paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
-        </a>
+        </span>
       </li>
       <li v-for="(item, index) in items" :key="'item-'+index" class="paginateItem">
-        <a v-if="Number(item) === Number(page)" href="#" class="paginateLink active">{{ item }}</a>
+        <span v-if="Number(item) === Number(modelValue)" class="paginateLink active">{{ item }}</span>
         <span v-else-if="item === '...'" class="paginateLink disabled">{{ item }}</span>
-        <a v-else href="#" class="paginateLink">{{ item }}</a>
+        <span v-else @click="emit('update:modelValue', item);" class="paginateLink">{{ item }}</span>
       </li>
       <li class="paginateItem">
-        <a href="#" class="paginateLink">
+        <span class="paginateLink" @click="emit('update:modelValue', (Number(modelValue) < Number(total)) ? Number(modelValue) + 1 : Number(total));">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
           </svg>
-        </a>
+        </span>
       </li>
       <li class="paginateItem">
-        <a href="#" class="paginateLink">
+        <span class="paginateLink" @click="emit('update:modelValue', Number(total));">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-right paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"/>
             <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"/>
           </svg>
-        </a>
+        </span>
       </li>
     </ul>
   </nav>
@@ -89,6 +91,7 @@ const emit = defineEmits<{
   position: relative;
   display: block;
   color: inherit;
+  cursor: pointer;
   text-decoration: none;
   background-color: #fff;
   border: 0.0625rem solid rgba(0, 0, 0, 0.15);

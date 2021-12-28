@@ -25,6 +25,6 @@ const columns = [
   -moz-osx-font-smoothing: grayscale;
   width: 1024px;
   color: #2c3e50;
-  margin: 60px auto;
+  margin: 30px auto;
 }
 </style>
