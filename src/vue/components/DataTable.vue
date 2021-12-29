@@ -3,6 +3,7 @@ import { ref, toRef } from 'vue'
 import TableBox from './TableBox.vue'
 import PaginateBox from './PaginateBox.vue'
 import usePaginate from '../composables/usePaginate'
+import useFilter from '../composables/useFilter'
 
 const props = defineProps<{ 
   columns: Array<any>,
@@ -19,18 +20,20 @@ const emit = defineEmits<{
 const getLimitPerPage = ref<number>(7)
 const getCurrentPage = ref<number>(1)
 const getEllipsis = ref<number>(2)
+const getSearch = ref<string>('')
+const getFilter = ref<any>({})
 
-const { getOffset, getPages, paginatedEntries, getPagination } = usePaginate(toRef(props, 'entries'), getLimitPerPage, getCurrentPage, getEllipsis)
+const { filteredEntries } = useFilter(toRef(props, 'entries'), getSearch, getFilter)
+const { getOffset, getPages, paginatedEntries, getPagination } = usePaginate(filteredEntries, getLimitPerPage, getCurrentPage, getEllipsis)
 
 const checks = ref<any[]>([])
-const filters = ref<any>({})
 const checkedRows = (rows: any[]) => {
   checks.value = rows
   emit('checklist', checks.value)
 }
 const filterColumns = (columns: any) => {
-  filters.value = columns
-  emit('filter', filters.value)
+  getFilter.value = columns
+  emit('filter', getFilter.value)
 }
 </script>
 
@@ -38,7 +41,9 @@ const filterColumns = (columns: any) => {
   <div class="tableWrap">
     <div class="tableTop">
       <div class="tableTopLeft"></div>
-      <div class="tableTopRight"></div>
+      <div class="tableTopRight">
+        <input type="text" v-model="getSearch" class="tableSearch" @keyup.enter="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" placeholder="Search here...">
+      </div>
     </div>
     <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" />
     <div class="tableBottom">
@@ -141,5 +146,23 @@ const filterColumns = (columns: any) => {
   -webkit-transition: all 0.15s ease-in-out;
   transition: all 0.15s ease-in-out;
   width: 8px;
+}
+
+.tableSearch {
+  position: relative;
+  display: block;
+  border: 0.0625rem solid rgba(0, 0, 0, 0.15);
+  padding: 0.15rem 1rem;
+  border-radius: 1rem;
+  width: 100%;
+  line-height: 2rem;
+  box-sizing: border-box;
+  font-family: inherit;
+  outline: none;
+  appearance: none;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 </style>

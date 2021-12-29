@@ -41,7 +41,7 @@ const filterMap = ref({})
                 </select>
               </template>
               <template v-else>
-                <input type="text" :ref="'filter-'+col.prop" class="tableInput" @keyup.enter="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" placeholder="Press enter key">
+                <input type="text" :ref="'filter-'+col.prop" class="tableInput" @input="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" placeholder="Press enter key">
               </template>
             </div>
           </th>
