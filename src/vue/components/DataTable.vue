@@ -4,6 +4,7 @@ import TableBox from './TableBox.vue'
 import PaginateBox from './PaginateBox.vue'
 import usePaginate from '../composables/usePaginate'
 import useFilter from '../composables/useFilter'
+import useSort from '../composables/useSort'
 
 const props = defineProps<{ 
   columns: Array<any>,
@@ -14,7 +15,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'checklist', rows: any[]): void,
-  (e: 'filter', columns: any): void
+  (e: 'filter', columns: any): void,
+  (e: 'sort', value: any): void
 }>()
 
 const getLimitPerPage = ref<number>(7)
@@ -22,9 +24,11 @@ const getCurrentPage = ref<number>(1)
 const getEllipsis = ref<number>(2)
 const getSearch = ref<string>('')
 const getFilter = ref<any>({})
+const getSort = ref<any>({})
 
 const { filteredEntries } = useFilter(toRef(props, 'entries'), getSearch, getFilter)
-const { getOffset, getPages, paginatedEntries, getPagination } = usePaginate(filteredEntries, getLimitPerPage, getCurrentPage, getEllipsis)
+const { sortedEntries } = useSort(filteredEntries, getSort)
+const { getOffset, getPages, paginatedEntries, getPagination, getPageInfo } = usePaginate(sortedEntries, getLimitPerPage, getCurrentPage, getEllipsis)
 
 const checks = ref<any[]>([])
 const checkedRows = (rows: any[]) => {
@@ -35,6 +39,10 @@ const filterColumns = (columns: any) => {
   getFilter.value = columns
   emit('filter', getFilter.value)
 }
+const sortColumns = (value: any) => {
+  getSort.value = value
+  emit('sort', getSort.value)
+}
 </script>
 
 <template>
@@ -42,10 +50,10 @@ const filterColumns = (columns: any) => {
     <div class="tableTop">
       <div class="tableTopLeft"></div>
       <div class="tableTopRight">
-        <input type="text" v-model="getSearch" class="tableSearch" @keyup.enter="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" placeholder="Search here...">
+        <input type="text" v-model="getSearch" class="tableSearch" placeholder="Search here...">
       </div>
     </div>
-    <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" />
+    <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" @sort="sortColumns" :rows="entries" />
     <div class="tableBottom">
       <div class="tableBottomLeft">
         <div class="tableSelect">
@@ -58,7 +66,7 @@ const filterColumns = (columns: any) => {
             <option :value="100">100</option>
           </select>
         </div>
-        <div class="tableInfo">from {{ getOffset }} to {{ (Number(getOffset) + Number(getLimitPerPage)) - 1 }} of {{ getPages }}</div>
+        <div class="tableInfo">from {{ getPageInfo.start }} to {{ getPageInfo.end }} of {{getPageInfo.length }}</div>
       </div>
       <div class="tableBottomRight">
         <PaginateBox :items="getPagination" v-model="getCurrentPage" :total="getPages" />

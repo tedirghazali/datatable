@@ -15,15 +15,16 @@ export default function usePaginate(getEntries: Ref<any[]>, getLimitPerPage: Ref
   })
   
   const getPageInfo = computed<any>(() => {
+    const getEnd = getLimitPerPage.value * getCurrentPage.value
     return {
       start: getOffset.value,
-      end: getLimitPerPage.value * getCurrentPage.value,
+      end: (getEnd < getEntries.value.length) ? getEnd : getEntries.value.length,
       length: getEntries.value.length
     }
   })
   
   const getPagination = computed<any[]>(() => {
-    let pagiArray = []
+    let pagiArray: any[] = []
     const maxPages = (getPages.value < getCurrentPage.value) ? getPages.value : getCurrentPage.value
     const minPages = (getCurrentPage.value < 1) ? 1 : getCurrentPage.value
     const pageAddition = maxPages + getEllipsis.value
@@ -43,8 +44,8 @@ export default function usePaginate(getEntries: Ref<any[]>, getLimitPerPage: Ref
         pagiArray.push(i)
       }
     }
-    const filterNegative = pagiArray.filter((num: number) => num > 0)
-    const filterMax = filterNegative.filter((num: number) => num <= getPages.value)
+    const filterNegative = pagiArray.filter((num: any) => Number(num) > 0)
+    const filterMax = filterNegative.filter((num: any) => Number(num) <= getPages.value)
     if(pageAddition < getPages.value && getEllipsis.value !== 0) {
       filterMax.push('...')
     }

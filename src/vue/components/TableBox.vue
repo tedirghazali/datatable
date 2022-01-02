@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
+import { ref, reactive, toRef } from 'vue'
 import useTable from '../composables/useTable'
 
 const props = defineProps<{ 
   columns: Array<any>,
   filter?: boolean,
   entries: Array<any>,
+  rows: Array<any>,
   footers?: Array<any[]>,
 }>()
 
 const emit = defineEmits<{
   (e: 'checklist', rows: any[]): void,
-  (e: 'filter', columns: any): void
+  (e: 'filter', columns: any): void,
+  (e: 'sort', value: any): void
 }>()
 
-const { getColumnProperties, getColumnData } = useTable(toRef(props, 'columns'), toRef(props, 'entries'))
+const sort = reactive<{col: string, by: string}>({
+  col: '',
+  by: ''
+})
+//@ts-ignore
+const { getColumnProperties, getColumnData } = useTable(toRef(props, 'columns'), toRef(props, 'rows'))
 
 const checkedList = ref([])
 const filterMap = ref({})
@@ -28,20 +35,46 @@ const filterMap = ref({})
           <template v-if="col.type === 'checkbox'">
             <input type="checkbox" class="tableCheckInput">
           </template>
-          <template v-else>{{ col.text }}</template>
+          <template v-else>
+            <div class="tableSort">
+              <span>{{ col.text }}</span>
+              <span v-if="sort.col === col.prop && sort.by === 'asc'" @click="sort.col = col.prop; sort.by = 'desc'; emit('sort', sort);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down tableEvent" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371h-1.781zm1.57-.785L11 2.687h-.047l-.652 2.157h1.351z"/>
+                  <path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V14zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"/>
+                </svg>
+              </span>
+              <span v-else-if="sort.col === col.prop && sort.by === 'desc'" @click="sort.col = col.prop; sort.by = 'asc'; emit('sort', sort);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-up-alt tableEvent" viewBox="0 0 16 16">
+                  <path d="M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V7z"/>
+                  <path fill-rule="evenodd" d="M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371h-1.781zm1.57-.785L11 9.688h-.047l-.652 2.156h1.351z"/>
+                  <path d="M4.5 13.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z"/>
+                </svg>
+              </span>
+              <span v-else @click="sort.col = col.prop; sort.by = 'asc'; emit('sort', sort);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-numeric-up tableEvent" viewBox="0 0 16 16">
+                  <path d="M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"></path>
+                  <g transform="translate(7 0)">
+                    <path d="M4.5 13.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z"></path>
+                  </g>
+                </svg>
+              </span>
+            </div>
+          </template>
         </th>
       </tr>
       <template v-if="filter">
         <tr>
           <th v-for="(col, ind) in columns" :key="'filter-'+ind">
             <div v-if="col.filter === true">
-              <template v-if="col.filterType === 'select'">
-                <select class="tableSelect">
-                  <option></option>
+              <div class="tableSelect" v-if="col.filterType === 'select'">
+                <select class="tableSelectBox" :ref="'filter-'+col.prop" @change="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)">
+                  <option value="" selected></option>
+                  <option v-for="(tkCol, tkInd) in getColumnData(col.prop)" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                 </select>
-              </template>
+              </div>
               <template v-else>
-                <input type="text" :ref="'filter-'+col.prop" class="tableInput" @input="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" placeholder="Press enter key">
+                <input type="text" :ref="'filter-'+col.prop" class="tableInput" @input="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" :placeholder="'Filter '+col.prop">
               </template>
             </div>
           </th>
@@ -116,6 +149,12 @@ const filterMap = ref({})
   overflow-x: auto;
 }
 
+.tableSort {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .tableInput {
   position: relative;
   display: block;
@@ -134,14 +173,14 @@ const filterMap = ref({})
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.tableSelect {
+.tableSelectBox {
   position: relative;
   display: block;
+  background: #fff;
   border: 0.0625rem solid rgba(0, 0, 0, 0.15);
-  padding: 0.3125rem 1.25rem;
+  padding: 0.15rem 1rem;
   border-radius: 1rem;
   width: 100%;
-  min-height: 44px;
   line-height: 2rem;
   box-sizing: border-box;
   cursor: pointer;
@@ -157,17 +196,21 @@ const filterMap = ref({})
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
+.tableSelect {
+  position: relative;
+}
+
 .tableSelect::after {
-  border-bottom: 3px solid rgba(0, 0, 0, 0.15);
-  border-right: 3px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  border-right: 2px solid rgba(0, 0, 0, 0.15);
   content: '';
   display: block;
-  height: 10px;
+  height: 8px;
   margin-top: -6px;
   pointer-events: none;
   position: absolute;
   right: 8px;
-  top: 45%;
+  top: 50%;
   margin-right: 10px;
   -webkit-transform-origin: 66% 66%;
   -ms-transform-origin: 66% 66%;
@@ -177,8 +220,9 @@ const filterMap = ref({})
   transform: rotate(45deg);
   -webkit-transition: all 0.15s ease-in-out;
   transition: all 0.15s ease-in-out;
-  width: 10px;
+  width: 8px;
 }
+
 .tableCheck {
   display: flex;
   align-items: center;
@@ -208,5 +252,9 @@ const filterMap = ref({})
 .tableCheckLabel {
   margin-left: 0.3125rem;
   display: inline-block;
+}
+
+.tableEvent {
+  pointer-events: none;
 }
 </style>

@@ -2,7 +2,7 @@ import { computed, Ref } from 'vue'
 
 export default function useFilter(getEntries: Ref<any[]>, getSearch: Ref<string>, getFilter: Ref<any>) {
   
-  const searchedEntries = computed<number>(() => {
+  const searchedEntries = computed<any[]>(() => {
     let newEntries: any[] = []
     if(getSearch.value.length > 1) {
       newEntries = getEntries.value.filter((obj: any) => {
@@ -35,12 +35,12 @@ export default function useFilter(getEntries: Ref<any[]>, getSearch: Ref<string>
   const filteredEntries = computed<any[]>(() => {
     let newEntries: any[] = searchedEntries.value
     //@ts-ignore
-    for(const [ftrKey, ftrVal] of Object.entries(getCleanFilter.value)) {
+    for(const ftrKey of Object.keys(getCleanFilter.value)) {
       newEntries = newEntries.filter((obj: any) => {
         if(ftrKey in obj) {
-          if(isNaN(obj[ftrKey]) === false && Number(obj[ftrKey]) === Number(ftrVal)) {
+          if(isNaN(obj[ftrKey]) === false && Number(obj[ftrKey]) === Number(getCleanFilter.value[ftrKey])) {
             return true
-          } else if(typeof obj[ftrKey] === 'string' && obj[ftrKey].toLowerCase().includes(ftrVal.toLowerCase())) {
+          } else if(typeof obj[ftrKey] === 'string' && obj[ftrKey].toLowerCase().includes(getCleanFilter.value[ftrKey].toLowerCase())) {
             return true
           }
         }
