@@ -23,17 +23,41 @@ const sort = reactive<{col: string, by: string}>({
 //@ts-ignore
 const { getColumnProperties, getColumnData } = useTable(toRef(props, 'columns'), toRef(props, 'rows'))
 
-const checkedList = ref([])
-const filterMap = ref({})
+const checkedList = ref<any[]>([])
+const checkedAll = ref<any>(null)
+const checkedRefs = ref<any[]>([])
+const setCheckedRef = (el: any) => {
+  if (el) {
+    checkedRefs.value.push(el)
+  }
+}
+
+const filterMap = ref<any>({})
+for(const column of props.columns) {
+  if('prop' in column) {
+    filterMap.value[column.prop] = ''
+  }
+}
+
+const flatByProp = (prop: string) => {
+  //@ts-ignore
+  return props.entries.map((mi: any) => mi[prop])
+}
+
+const removeChecked = (item: string | number | any) => {
+  //@ts-ignore
+  const getIndex = checkedList.value.findIndex((fi: string | number | any) => fi === item)
+  checkedList.value.splice(getIndex, 1)
+}
 </script>
 
 <template>
-  <table class="table">
+  <table class="table tableBorder">
     <thead>
       <tr>
         <th v-for="(col, ind) in columns" :key="'col-'+ind">
           <template v-if="col.type === 'checkbox'">
-            <input type="checkbox" class="tableCheckInput">
+            <input type="checkbox" ref="checkedAll" class="tableCheckInput" @click="checkedList = (checkedAll.checked === true) ? flatByProp(col.prop) : []">
           </template>
           <template v-else>
             <div class="tableSort">
@@ -66,15 +90,15 @@ const filterMap = ref({})
       <template v-if="filter">
         <tr>
           <th v-for="(col, ind) in columns" :key="'filter-'+ind">
-            <div v-if="col.filter === true">
+            <div v-if="col.filter === true && 'prop' in col">
               <div class="tableSelect" v-if="col.filterType === 'select'">
-                <select class="tableSelectBox" :ref="'filter-'+col.prop" @change="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)">
+                <select class="tableSelectBox" v-model="filterMap[col.prop]" @change="emit('filter', filterMap)">
                   <option value="" selected></option>
                   <option v-for="(tkCol, tkInd) in getColumnData(col.prop)" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                 </select>
               </div>
               <template v-else>
-                <input type="text" :ref="'filter-'+col.prop" class="tableInput" @input="filterMap[col.prop] = $refs['filter-'+col.prop].value; emit('filter', filterMap)" :placeholder="'Filter '+col.prop">
+                <input type="text" v-model="filterMap[col.prop]" class="tableInput" @input="emit('filter', filterMap)">
               </template>
             </div>
           </th>
@@ -88,7 +112,7 @@ const filterMap = ref({})
             <component :is="col.component" v-model="col.value" :options="col.options"></component>
           </template>
           <template v-else-if="col.type === 'checkbox'">
-            <input type="checkbox" class="tableCheckInput" :value="entry[col.prop]" @click="checkedList.push(entry); emit('checklist', checkedList)">
+            <input type="checkbox" class="tableCheckInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checkedList.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checkedList.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checkedList)">
           </template>
           <template v-else>{{ entry[col.prop] }}</template>
         </td>
@@ -136,13 +160,13 @@ const filterMap = ref({})
 }
     
 .tableBorder {
-  border-top: 1px solid rgba(0, 0, 0, 0.25);
-  border-right: 1px solid rgba(0, 0, 0, 0.25);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
     
 .tableBorder th, .tableBorder td {
-  border-left: 1px solid rgba(0, 0, 0, 0.25);
+  border-left: 1px solid rgba(0, 0, 0, 0.15);
 }
     
 .tableResponsive {
