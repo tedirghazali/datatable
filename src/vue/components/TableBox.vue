@@ -8,6 +8,7 @@ const props = defineProps<{
   entries: Array<any>,
   rows: Array<any>,
   footers?: Array<any[]>,
+  theme?: any
 }>()
 
 const emit = defineEmits<{
@@ -49,18 +50,31 @@ const removeChecked = (item: string | number | any) => {
   const getIndex = checkedList.value.findIndex((fi: string | number | any) => fi === item)
   checkedList.value.splice(getIndex, 1)
 }
+
+const theme = ref<any>({
+  table: 'table tableBorder',
+  tableSort: 'tableSort',
+  tableSearch: 'tableSearch',
+  tableSelect: 'tableSelect',
+  tableSelectBox: 'tableSelectBox',
+  tableCheckBox: 'tableCheckBox',
+  tableInputBox: 'tableInputBox'
+})
+if('theme' in props && props.theme !== undefined && props.theme !== null) {
+  theme.value = {...theme.value, ...props.theme}
+}
 </script>
 
 <template>
-  <table class="table tableBorder">
+  <table :class="theme.table">
     <thead>
       <tr>
         <th v-for="(col, ind) in columns" :key="'col-'+ind">
           <template v-if="col.type === 'checkbox'">
-            <input type="checkbox" ref="checkedAll" class="tableCheckInput" @click="checkedList = (checkedAll.checked === true) ? flatByProp(col.prop) : []">
+            <input type="checkbox" ref="checkedAll" :class="theme.tableCheckBox" @click="checkedList = (checkedAll.checked === true) ? flatByProp(col.prop) : []">
           </template>
           <template v-else>
-            <div class="tableSort">
+            <div :class="theme.tableSort">
               <span>{{ col.text }}</span>
               <span v-if="sort.col === col.prop && sort.by === 'asc'" @click="sort.col = col.prop; sort.by = 'desc'; emit('sort', sort);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down tableEvent" viewBox="0 0 16 16">
@@ -91,14 +105,14 @@ const removeChecked = (item: string | number | any) => {
         <tr>
           <th v-for="(col, ind) in columns" :key="'filter-'+ind">
             <div v-if="col.filter === true && 'prop' in col">
-              <div class="tableSelect" v-if="col.filterType === 'select'">
-                <select class="tableSelectBox" v-model="filterMap[col.prop]" @change="emit('filter', filterMap)">
+              <div :class="theme.tableSelect" v-if="col.filterType === 'select'">
+                <select :class="theme.tableSelectBox" v-model="filterMap[col.prop]" @change="emit('filter', filterMap)">
                   <option value="" selected></option>
                   <option v-for="(tkCol, tkInd) in getColumnData(col.prop)" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                 </select>
               </div>
               <template v-else>
-                <input type="text" v-model="filterMap[col.prop]" class="tableInput" @input="emit('filter', filterMap)">
+                <input type="text" v-model="filterMap[col.prop]" :class="theme.tableInputBox" @input="emit('filter', filterMap)">
               </template>
             </div>
           </th>
@@ -112,7 +126,7 @@ const removeChecked = (item: string | number | any) => {
             <component :is="col.component" v-model="col.value" :options="col.options"></component>
           </template>
           <template v-else-if="col.type === 'checkbox'">
-            <input type="checkbox" class="tableCheckInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checkedList.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checkedList.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checkedList)">
+            <input type="checkbox" :class="theme.tableCheckBox" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checkedList.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checkedList.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checkedList)">
           </template>
           <template v-else>{{ entry[col.prop] }}</template>
         </td>
@@ -179,7 +193,7 @@ const removeChecked = (item: string | number | any) => {
   align-items: center;
 }
 
-.tableInput {
+.tableInputBox {
   position: relative;
   display: block;
   border: 0.0625rem solid rgba(0, 0, 0, 0.15);
@@ -253,7 +267,7 @@ const removeChecked = (item: string | number | any) => {
   min-height: 1.3125rem;
   padding-left: 1.5em;
 }
-.tableCheckInput {
+.tableCheckBox {
   width: 1rem;
   height: 1rem;
   background-color: #fff;
@@ -265,7 +279,7 @@ const removeChecked = (item: string | number | any) => {
   color-adjust: exact;
   border-radius: 0.15rem;
 }
-.tableCheckInput:checked {
+.tableCheckBox:checked {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
   background-color: rgba(0, 0, 0, 0.25);
 }

@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 interface Props {
   //@ts-ignore
   items?: Array<any>,
   modelValue?: number,
-  total: number
+  total: number,
+  theme?: any
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,41 +19,52 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'update:modelValue', value: number): void
 }>()
+
+const theme = ref<any>({
+  paginate: 'paginate',
+  paginateBox: 'paginateBox',
+  paginateItem: 'paginateItem',
+  paginateLink: 'paginateLink',
+  paginateEvent: 'paginateEvent'
+})
+if('theme' in props && props.theme !== undefined && props.theme !== null) {
+  theme.value = {...theme.value, ...props.theme}
+}
 </script>
 
 <template>
-  <nav class="paginate">
-    <ul class="paginateBox">
-      <li class="paginateItem">
-        <span class="paginateLink" @click="emit('update:modelValue', 1);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-left paginateEvent" viewBox="0 0 16 16">
+  <nav :class="theme.paginate">
+    <ul :class="theme.paginateBox">
+      <li :class="theme.paginateItem">
+        <span :class="theme.paginateLink" @click="emit('update:modelValue', 1);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-left" :class="theme.paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
             <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
         </span>
       </li>
-      <li class="paginateItem">
-        <span class="paginateLink" @click="emit('update:modelValue', (Number(modelValue) > 1) ? Number(modelValue) - 1 : 1);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-left paginateEvent" viewBox="0 0 16 16">
+      <li :class="theme.paginateItem">
+        <span :class="theme.paginateLink" @click="emit('update:modelValue', (Number(modelValue) > 1) ? Number(modelValue) - 1 : 1);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-left" :class="theme.paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
         </span>
       </li>
-      <li v-for="(item, index) in items" :key="'item-'+index" class="paginateItem">
-        <span v-if="Number(item) === Number(modelValue)" class="paginateLink active">{{ item }}</span>
-        <span v-else-if="item === '...'" class="paginateLink disabled">{{ item }}</span>
-        <span v-else @click="emit('update:modelValue', item);" class="paginateLink">{{ item }}</span>
+      <li v-for="(item, index) in items" :key="'item-'+index" :class="theme.paginateItem">
+        <span v-if="Number(item) === Number(modelValue)" class="active" :class="theme.paginateLink">{{ item }}</span>
+        <span v-else-if="item === '...'" class="disabled" :class="theme.paginateLink">{{ item }}</span>
+        <span v-else @click="emit('update:modelValue', item);" :class="theme.paginateLink">{{ item }}</span>
       </li>
-      <li class="paginateItem">
-        <span class="paginateLink" @click="emit('update:modelValue', (Number(modelValue) < Number(total)) ? Number(modelValue) + 1 : Number(total));">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right paginateEvent" viewBox="0 0 16 16">
+      <li :class="theme.paginateItem">
+        <span :class="theme.paginateLink" @click="emit('update:modelValue', (Number(modelValue) < Number(total)) ? Number(modelValue) + 1 : Number(total));">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" :class="theme.paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
           </svg>
         </span>
       </li>
       <li class="paginateItem">
         <span class="paginateLink" @click="emit('update:modelValue', Number(total));">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-right paginateEvent" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-right" :class="theme.paginateEvent" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"/>
             <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"/>
           </svg>

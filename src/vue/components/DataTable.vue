@@ -11,6 +11,7 @@ const props = defineProps<{
   filter?: boolean,
   entries: Array<any>,
   footers?: Array<any[]>,
+  theme?: any
 }>()
 
 const emit = defineEmits<{
@@ -43,21 +44,57 @@ const sortColumns = (value: any) => {
   getSort.value = value
   emit('sort', getSort.value)
 }
+
+const theme = ref<any>({
+  wrapper: {
+    tableWrap: 'tableWrap',
+    tableTop: 'tableTop',
+    tableTopLeft: 'tableTopLeft',
+    tableTopRight: 'tableTopRight',
+    tableBottom: 'tableBottom',
+    tableBottomLeft: 'tableBottomLeft',
+    tableBottomRight: 'tableBottomRight',
+    tableInfo: 'tableInfo'
+  },
+  input: {
+    tableSearch: 'tableSearch',
+    tableSelect: 'tableSelect',
+    tableSelectBox: 'tableSelectBox',
+    tableCheckBox: 'tableCheckBox',
+    tableInputBox: 'tableInputBox'
+  },
+  table: {
+    table: 'table tableBorder',
+    tableSort: 'tableSort'
+  },
+  paginate: {
+    paginate: 'paginate',
+    paginateBox: 'paginateBox',
+    paginateItem: 'paginateItem',
+    paginateLink: 'paginateLink',
+    paginateEvent: 'paginateEvent'
+  }
+})
+if('theme' in props && props.theme !== undefined && props.theme !== null) {
+  if('wrapper' in props.theme && 'input' in props.theme && 'table' in props.theme && 'paginate' in props.theme) {
+    theme.value = {...theme.value, ...props.theme}
+  }
+}
 </script>
 
 <template>
-  <div class="tableWrap">
-    <div class="tableTop">
-      <div class="tableTopLeft"></div>
-      <div class="tableTopRight">
-        <input type="text" v-model="getSearch" class="tableSearch" placeholder="Search here...">
+  <div :class="theme.wrapper.tableWrap">
+    <div :class="theme.wrapper.tableTop">
+      <div :class="theme.wrapper.tableTopLeft"></div>
+      <div :class="theme.wrapper.tableTopRight">
+        <input type="text" v-model="getSearch" :class="theme.input.tableSearch" placeholder="Search here...">
       </div>
     </div>
-    <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" @sort="sortColumns" :rows="entries" />
-    <div class="tableBottom">
-      <div class="tableBottomLeft">
-        <div class="tableSelect">
-          <select v-model="getLimitPerPage" class="tableSelectBox">
+    <TableBox :columns="columns" :entries="paginatedEntries" @checklist="checkedRows" :filter="filter" @filter="filterColumns" @sort="sortColumns" :rows="entries" :theme="{...theme.input, ...theme.table}" />
+    <div :class="theme.wrapper.tableBottom">
+      <div :class="theme.wrapper.tableBottomLeft">
+        <div :class="theme.input.tableSelect">
+          <select v-model="getLimitPerPage" :class="theme.input.tableSelectBox">
             <option :value="5">5</option>
             <option :value="7">7</option>
             <option :value="10">10</option>
@@ -66,10 +103,10 @@ const sortColumns = (value: any) => {
             <option :value="100">100</option>
           </select>
         </div>
-        <div class="tableInfo">from {{ getPageInfo.start }} to {{ getPageInfo.end }} of {{getPageInfo.length }}</div>
+        <div class="theme.wrapper.tableInfo">from {{ getPageInfo.start }} to {{ getPageInfo.end }} of {{getPageInfo.length }}</div>
       </div>
-      <div class="tableBottomRight">
-        <PaginateBox :items="getPagination" v-model="getCurrentPage" :total="getPages" />
+      <div :class="theme.wrapper.tableBottomRight">
+        <PaginateBox :items="getPagination" v-model="getCurrentPage" :total="getPages" :theme="theme.paginate" />
       </div>
     </div>
   </div>
