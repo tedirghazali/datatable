@@ -1,0 +1,25 @@
+@alga dataTable {
+  .dataTable {
+    ref: marginTop-0.25rem marginBottom-0.25rem;
+    
+    .dataTableHeader, .dataTableFooter {
+      ref: display-flex justifyContent-spaceBetween alignItems-center padding-0.5rem gap-1rem;
+    }
+    
+    .dataTableBody {
+      ref: padding-0.5rem;
+    }
+  }
+  
+  .dataTableLimit {
+    ref: display-flex alignItems-center gap-0.75rem;
+    
+    .dataTableSelect {
+      ref: width-80px;
+    }
+    
+    .dataTableInfo {
+      ref: flexGrow-1;
+    }
+  }
+}

@@ -47,6 +47,8 @@
     "vue-tsc": "^0.28.10"
   },
   "dependencies": {
+    "alga-css": "^1.0.0-stone-0",
+    "alga-vue": "^0.0.1-wood-4",
     "vue": "^3.2.20"
   }
 }

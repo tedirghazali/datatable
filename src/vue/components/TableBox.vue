@@ -123,7 +123,7 @@ if('theme' in props && props.theme !== undefined && props.theme !== null) {
       <tr v-for="(entry, index) in entries" :key="'entry-'+index">
         <td v-for="(col, ind) in columns" :key="'col-'+ind">
           <template v-if="col.type === 'component'">
-            <component :is="col.component" v-model="col.value" :options="col.options"></component>
+            <component :is="col.component" :entry="entry"></component>
           </template>
           <template v-else-if="col.type === 'checkbox'">
             <input type="checkbox" :class="theme.tableCheckBox" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checkedList.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checkedList.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checkedList)">
@@ -283,7 +283,7 @@ if('theme' in props && props.theme !== undefined && props.theme !== null) {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
   background-color: rgba(0, 0, 0, 0.25);
 }
-.tableCheck .selectCheckInput {
+.tableCheck .tableCheckBox {
   float: left;
   margin-left: -1.5em;
 }

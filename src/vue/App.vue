@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import DataTable from './components/DataTable.vue'
+import DataTable from './components/DataTableV2.vue'
 import entries from './models/entries'
 
 const columns = [
@@ -15,16 +15,12 @@ const columns = [
 </script>
 
 <template>
-  <DataTable :columns="columns" :entries="entries" :filter="true" />
+  <div class="container mt-30px">
+    <DataTable :columns="columns" :entries="entries" :filter="true" />
+  </div>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  width: 1024px;
-  color: #2c3e50;
-  margin: 30px auto;
-}
+@use base;
+@use container;
 </style>
