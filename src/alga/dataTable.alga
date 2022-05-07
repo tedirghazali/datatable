@@ -22,4 +22,8 @@
       ref: flexGrow-1;
     }
   }
+  
+  .dataTableSort {
+    ref: display-flex justifyContent-spaceBetween;
+  }
 }

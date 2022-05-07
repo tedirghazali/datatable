@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import DataTable from './components/DataTableV2.vue'
+import DataTable from './components/DataTable.vue'
 import entries from './models/entries'
 
 const columns = [
