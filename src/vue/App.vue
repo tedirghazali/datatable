@@ -10,17 +10,29 @@ const columns = [
   { prop: 'office', text: 'Office', type: 'text', filter: true, filterType: 'select' },
   { prop: 'extension', text: 'Exten.', type: 'text', filter: true },
   { prop: 'startdate', text: 'Start Date', type: 'text', filter: true },
-  { prop: 'salary', text: 'Salary', type: 'text', filter: true }
+  { prop: 'salary', text: 'Salary', type: 'text', filter: true },
+  { prop: 'action', text: 'Action', type: 'slot' }
 ]
 </script>
 
 <template>
   <div class="container mt-30px">
-    <DataTable :columns="columns" :entries="entries" :filter="true" />
+    <DataTable :columns="columns" :entries="entries" :filter="true">
+      <template v-slot:action="slotProps">
+        <div class="d-flex gap-5px">
+          <p>{{ slotProps.entry.id }}</p>
+          <button type="button" class="button">Edit</button>
+          <button type="button" class="button">Delete</button>
+        </div>
+      </template>
+    </DataTable>
   </div>
 </template>
 
 <style>
 @use base;
 @use container;
+@use form {
+  field: button;
+}
 </style>

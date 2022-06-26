@@ -1,11 +1,3 @@
 @import './src/alga/dataTable.alga';
 
-/*@use form {
-  field: input, check;
-}
-@use table;
-@use pagination {
-  type: dense;
-}*/
-
 @export dataTable;

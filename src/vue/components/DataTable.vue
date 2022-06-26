@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, toRef } from 'vue'
+import { ref, toRef, computed } from 'vue'
 import { useTable, useFilter, useSort, usePaginate } from 'alga-vue'
+import PaginationBox from './PaginationBox.vue'
 
 const props = defineProps<{ 
   columns: Array<any>,
   filter?: boolean,
   entries: Array<any>,
-  footers?: Array<any[]>
+  footers?: Array<any[]>,
+  server?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,6 +31,14 @@ const { getColumnProperties, getColumnData } = useTable(toRef(props, 'columns'),
 const { filteredEntries } = useFilter(toRef(props, 'entries'), getSearch, getFilter)
 const { sortedEntries } = useSort(filteredEntries, getSort)
 const { getOffset, getPages, paginatedEntries, getPagination, getPageInfo } = usePaginate(sortedEntries, getLimitPerPage, getCurrentPage, getEllipsis)
+
+const renderEntries = computed(() => {
+  let newEntries = paginatedEntries.value || []
+  if(props?.server) {
+    newEntries = props?.entries || []
+  }
+  return newEntries
+})
 
 const checkedAll = ref<any>(null)
 const checkedRefs = ref<any[]>([])
@@ -125,10 +135,10 @@ const sortColumns = (value: any) => {
           </template>
         </thead>
         <tbody>
-          <tr v-for="(entry, index) in paginatedEntries" :key="'entry-'+index">
+          <tr v-for="(entry, index) in renderEntries" :key="'entry-'+index">
             <td v-for="(col, ind) in columns" :key="'col-'+ind">
               <template v-if="col.type === 'slot'">
-                <slot :entry="entry"></slot>
+                <slot :name="col.prop" :entry="entry"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
                 <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks)">
@@ -163,45 +173,7 @@ const sortColumns = (value: any) => {
         </div>
         <div class="dataTableInfo">from {{ getPageInfo.start }} to {{ getPageInfo.end }} of {{getPageInfo.length }}</div>
       </div>
-      <nav>
-        <ul class="pagination dense">
-          <li class="item">
-            <span class="link" @click="getCurrentPage = 1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-                <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-              </svg>
-            </span>
-          </li>
-          <li class="item">
-            <span class="link" @click="getCurrentPage = (Number(getCurrentPage) > 1) ? Number(getCurrentPage) - 1 : 1">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-              </svg>
-            </span>
-          </li>
-          <li v-for="(item, index) in getPagination" :key="'item-'+index" class="item" :class="Number(item) === Number(getCurrentPage) ? 'active' : ''">
-            <span v-if="Number(item) === Number(getCurrentPage)" class="link">{{ item }}</span>
-            <span v-else-if="item === '...'" class="link">{{ item }}</span>
-            <span v-else @click="getCurrentPage = item" class="link">{{ item }}</span>
-          </li>
-          <li class="item">
-            <span class="link" @click="getCurrentPage = (Number(getCurrentPage) < Number(getPages)) ? Number(getCurrentPage) + 1 : Number(getPages)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-              </svg>
-            </span>
-          </li>
-          <li class="item">
-            <span class="link" @click="getCurrentPage = Number(getPages)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"/>
-                <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"/>
-              </svg>
-            </span>
-          </li>
-        </ul>
-      </nav>
+      <PaginationBox v-model="getCurrentPage" :pages="getPages" :items="getPagination" />
     </div>
   </div>
 </template>
@@ -209,7 +181,7 @@ const sortColumns = (value: any) => {
 <style scoped>
 @use dataTable;
 @use form {
-  field: input, select, check;
+  field: input, check;
 }
 @use table;
 @use pagination {

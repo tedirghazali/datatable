@@ -1,5 +1,7 @@
 import DataTable from './components/DataTable.vue'
+import PaginationBox from './components/PaginationBox.vue'
 
-export default {
-  DataTable
+export {
+  DataTable,
+  PaginationBox
 }
