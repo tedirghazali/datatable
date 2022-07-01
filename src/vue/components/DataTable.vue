@@ -75,7 +75,9 @@ const sortColumns = (value: any) => {
 <template>
   <div class="dataTable">
     <div class="dataTableHeader">
-      <div></div>
+      <div>
+        <slot></slot>
+      </div>
       <div>
         <input type="text" v-model="getSearch" class="input" placeholder="Search here...">
       </div>
@@ -88,6 +90,9 @@ const sortColumns = (value: any) => {
               <div class="check" v-if="col.type === 'checkbox'">
                 <input type="checkbox" ref="checkedAll" class="checkInput" @click="checks = (checkedAll.checked === true) ? flatByProp(col.prop) : []">
               </div>
+              <template v-else-if="col.sort === false">
+                <span>{{ col.text }}</span>
+              </template>
               <template v-else>
                 <div class="dataTableSort">
                   <span>{{ col.text }}</span>
