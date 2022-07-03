@@ -10,7 +10,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: number): void
+  (e: 'update:modelValue', value: number): void,
+  (e: 'handler', value: number): void
 }>()
 
 const currentPage = ref(props?.modelValue || 1)
@@ -30,6 +31,7 @@ const getPagination = computed(() => {
 const emitCurrentPage = (page) => {
   currentPage.value = page
   emit('update:modelValue', currentPage.value)
+  emit('handler', currentPage.value)
 }
 </script>
 
