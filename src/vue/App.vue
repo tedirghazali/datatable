@@ -88,8 +88,6 @@ const pressButton = (val) => {
 </template>
 
 <style>
-@use base;
-@use container;
 @use form {
   field: button;
 }

@@ -1,6 +1,6 @@
 import { customRef } from 'vue'
 
-export default function debouncedRef(value: string, delay: number = 200) {
+export default function useDebouncedRef(value: string, delay: number = 200) {
   let timeout: any = null
   return customRef<string>((track, trigger) => {
     return {

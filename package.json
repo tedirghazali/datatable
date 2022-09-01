@@ -43,15 +43,15 @@
   },
   "homepage": "https://github.com/tedirghazali/datatable#readme",
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.9.4",
-    "typescript": "^4.4.4",
-    "vite": "^2.6.13",
-    "vue-tsc": "^0.28.10"
+    "@vitejs/plugin-vue": "^3.0.3",
+    "alga-css": "^1.0.0-platinum-6",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.9",
+    "vue-tsc": "^0.40.4"
   },
   "dependencies": {
-    "alga-css": "^1.0.0-bronze-1",
-    "alga-js": "^0.1.0-wood-8",
+    "alga-js": "^0.1.0-stone-4",
     "alga-vue": "^0.0.1-stone-4",
-    "vue": "^3.2.20"
+    "vue": "^3.2.37"
   }
 }
