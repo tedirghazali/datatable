@@ -48,7 +48,7 @@ watch(search, setEntries)
 watch(filter, setEntries)
 watch(sort, setEntries)
 
-const pressButton = (val) => {
+const pressButton = (val: any) => {
   alert(JSON.stringify(val))
 }
 </script>

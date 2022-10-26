@@ -14,9 +14,9 @@ const emit = defineEmits<{
   (e: 'handler', value: number): void
 }>()
 
-const currentPage = ref(props?.modelValue || 1)
+const currentPage = ref<number>(props?.modelValue || 1)
 
-const getPagination = computed(() => {
+const getPagination = computed<any[]>(() => {
   let newPagination = []
   if(props?.items) {
     newPagination = props?.items || []
@@ -28,7 +28,7 @@ const getPagination = computed(() => {
   return newPagination
 })
 
-const emitCurrentPage = (page) => {
+const emitCurrentPage = (page: number) => {
   currentPage.value = page
   emit('update:modelValue', currentPage.value)
   emit('handler', currentPage.value)

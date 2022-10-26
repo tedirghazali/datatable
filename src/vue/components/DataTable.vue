@@ -175,9 +175,9 @@ const sortColumns = (value: any) => {
 </template>
 
 <style scoped>
-@use dataTable;
 @use form {
   field: input, check;
 }
 @use table;
+@use dataTable;
 </style>
