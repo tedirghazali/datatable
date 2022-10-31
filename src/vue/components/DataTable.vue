@@ -6,6 +6,7 @@ import PaginationBox from './PaginationBox.vue'
 const props = defineProps<{ 
   columns: Array<any>,
   filter?: boolean,
+  sortBy?: Array<string>,
   entries: Array<any>,
   footers?: Array<any[]>
 }>()
@@ -22,8 +23,8 @@ const ellipsis = ref<number>(2)
 const search = ref<string>('')
 const filter = ref<any>({})
 const sort = ref<any>({
-  col: props.columns?.[0]?.prop || '',
-  by: 'asc'
+  col: props?.sortBy?.[0] || props.columns?.[0]?.prop || '',
+  by: props?.sortBy?.[1] || 'desc'
 })
 
 const { getColumnProperties, getColumnData } = useTable(toRef(props, 'columns'), toRef(props, 'entries'))

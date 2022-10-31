@@ -71,7 +71,7 @@ const pressButton = (val: any) => {
     </ServerTable>
     <p><br /></p>
     <h2>DataTable</h2>
-    <DataTable :columns="columns" :entries="entries" :filter="true">
+    <DataTable :columns="columns" :entries="entries" :filter="true" :sortBy="['id', 'asc']">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
