@@ -40,18 +40,28 @@ const setCheckedRef = (el: any) => {
   }
 }
 const checks = ref<any[]>([])
-const checkedRows = (rows: any[]) => {
-  checks.value = rows
+const checkedRows = (e: any, colProp: string) => {
+  if(e.target.checked === true) {
+    //@ts-ignore
+    checks.value = paginatedEntries.value.map((mi: any) => mi[colProp])
+  } else { 
+    checks.value = [] 
+  }
   emit('checklist', checks.value)
-}
-const flatByProp = (prop: string) => {
-  //@ts-ignore
-  return props.entries.map((mi: any) => mi[prop])
 }
 const removeChecked = (item: string | number | any) => {
   //@ts-ignore
   const getIndex = checks.value.findIndex((fi: string | number | any) => fi === item)
   checks.value.splice(getIndex, 1)
+}
+
+const singleCheck = (e: any, entryProp: string | number) => {
+  if(e.target.checked === true && !checks.value.includes(entryProp)) { 
+    checks.value.push(entryProp) 
+  } else { 
+    removeChecked(entryProp)
+  }
+  emit('checklist', checks.value)
 }
 
 const filterColumns = (columns: any) => {
@@ -80,7 +90,7 @@ const sortColumns = (value: any) => {
           <tr>
             <th v-for="(col, ind) in columns" :key="'col-'+ind">
               <div class="check" v-if="col.type === 'checkbox'">
-                <input type="checkbox" ref="checkedAll" class="checkInput" @click="checks = (checkedAll.checked === true) ? flatByProp(col.prop) : []">
+                <input type="checkbox" ref="checkedAll" class="checkInput" @change="checkedRows($event, col.prop)">
               </div>
               <template v-else-if="col.sort === false">
                 <span>{{ col.text }}</span>
@@ -138,7 +148,7 @@ const sortColumns = (value: any) => {
                 <slot :name="col.prop" :entry="entry"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
-                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks)">
+                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @change="singleCheck($event, entry[col.prop])">
               </div>
               <template v-else>{{ entry[col.prop] }}</template>
             </td>

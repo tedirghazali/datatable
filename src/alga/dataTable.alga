@@ -1,29 +1,34 @@
-@alga dataTable {
-  .dataTable {
+@define refs {
+  name: dataTable;
+}
+
+@alga {refs.name} {
+  .{refs.name} {
     ref: marginTop-0.25rem marginBottom-0.25rem;
     
-    .dataTableHeader, .dataTableFooter {
-      ref: display-flex justifyContent-spaceBetween alignItems-center padding-0.5rem gap-1rem;
+    .{refs.name}Header, .{refs.name}Footer {
+      ref: display-flex justifyContent-spaceBetween alignItems-center;
+      ref: padding-0.5rem_0px gap-1rem flexWrap-wrap;
     }
     
-    .dataTableBody {
-      ref: padding-0.5rem;
+    .{refs.name}Body {
+      ref: padding-0.5rem_0px overflowX-auto;
     }
   }
   
-  .dataTableLimit {
+  .{refs.name}Limit {
     ref: display-flex alignItems-center gap-0.75rem;
     
-    .dataTableSelect {
+    .{refs.name}Select {
       ref: width-80px;
     }
     
-    .dataTableInfo {
+    .{refs.name}Info {
       ref: flexGrow-1;
     }
   }
   
-  .dataTableSort {
+  .{refs.name}Sort {
     ref: display-flex justifyContent-spaceBetween;
   }
 }

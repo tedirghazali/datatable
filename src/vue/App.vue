@@ -51,6 +51,10 @@ watch(sort, setEntries)
 const pressButton = (val: any) => {
   alert(JSON.stringify(val))
 }
+
+const checks = (val: any[]) => {
+  console.log(val)
+}
 </script>
 
 <template>
@@ -71,7 +75,7 @@ const pressButton = (val: any) => {
     </ServerTable>
     <p><br /></p>
     <h2>DataTable</h2>
-    <DataTable :columns="columns" :entries="entries" :filter="true" :sortBy="['id', 'asc']">
+    <DataTable :columns="columns" :entries="entries" :filter="true" :sortBy="['id', 'asc']" @checklist="checks">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
