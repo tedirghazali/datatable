@@ -34,6 +34,29 @@ const sort = ref<any>({
   by: 'asc'
 })
 
+const allData = ref<any>({
+  limit: 10,
+  page: 1
+  offset: 0,
+  search: '',
+  filter: {
+    name: '',
+    position: '',
+    office: '',
+    extension: '',
+    startdate: '',
+    salary: ''
+  },
+  sort: {
+    col: 'id',
+    by: 'asc'
+  },
+  total: 1,
+  length: 100,
+  from: 1,
+  to: 10
+})
+
 const getEntries = ref(entries)
 const setEntries = async () => {
   const response = await fetch(`http://localhost:3000/?limit=${limit.value}&offset=${offset.value}&sort_col=${sort.value.col}&sort_by=${sort.value.by}&search=${search.value}&filter_name=${filter.value.name}&filter_position=${filter.value.position}&filter_office=${filter.value.office}&filter_extension=${filter.value.extension}&filter_startdate=${filter.value.startdate}&filter_salary=${filter.value.salary}`)
@@ -44,9 +67,7 @@ const setEntries = async () => {
 }
 onMounted(setEntries)
 
-watch(search, setEntries)
-watch(filter, setEntries)
-watch(sort, setEntries)
+watch(allData, setEntries)
 
 const pressButton = (val: any) => {
   alert(JSON.stringify(val))
@@ -58,9 +79,9 @@ const checks = (val: any[]) => {
 </script>
 
 <template>
-  <div class="container mt-30px">
+  <div class="container my-30px">
     <h2>ServerTable</h2>
-    <ServerTable :columns="columns" :entries="getEntries" :select="columnData" :total="total" v-model:limit="limit" v-model:offset="offset" v-model:search="search" v-model:filter="filter" @handler="setEntries">
+    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" :total="total" @handler="setEntries">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
@@ -75,7 +96,7 @@ const checks = (val: any[]) => {
     </ServerTable>
     <p><br /></p>
     <h2>DataTable</h2>
-    <DataTable :columns="columns" :entries="entries" :filter="true" :sortBy="['id', 'asc']" @checklist="checks">
+    <DataTable :columns="columns" :entries="entries" filterBy="search" :sortBy="['id', 'asc']" @checklist="checks">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>

@@ -5,7 +5,7 @@ import PaginationBox from './PaginationBox.vue'
 
 const props = defineProps<{ 
   columns: Array<any>,
-  filter?: boolean,
+  filterBy?: string,
   sortBy?: Array<string>,
   entries: Array<any>,
   footers?: Array<any[]>
@@ -72,20 +72,48 @@ const sortColumns = (value: any) => {
   sort.value = value
   emit('sort', sort.value)
 }
+
+const searchBy = ref('')
+const searchRef = ref(null)
+const searchTimer = ref(null)
+const searchHandler = () => {
+  clearTimeout(searchTimer.value)
+  searchTimer.value = setTimeout(() => {
+    filter.value = {}
+    if(searchRef.value) {
+      if(searchBy.value !== '') {
+        filter.value[searchBy.value] = searchRef.value.value
+        search.value = ''
+      } else {
+        search.value = searchRef.value.value
+      }
+    }
+  }, 1000)
+}
 </script>
 
 <template>
-  <div class="dataTable">
+  <div class="card cardBody dataTable">
+    <slot name="header"></slot>
     <div class="dataTableHeader">
+      <div class="group">
+        <span class="button groupItem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointerEvents-none bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </span>
+        <input type="search" ref="searchRef" @input="searchHandler" @keyup.enter="searchHandler" class="input groupItem">
+        <select v-if="filterBy === 'search'" v-model="searchBy" @change="searchHandler" class="select groupItem dataTableSearchBy">
+          <option value="">All</option>
+          <option v-for="(col, ind) in columns" :key="ind" :value="col.prop">{{ col.text }}</option>
+        </select>
+      </div>
       <div>
         <slot></slot>
       </div>
-      <div>
-        <input type="text" v-model="search" class="input" placeholder="Search here...">
-      </div>
     </div>
-    <div class="dataTableBody">
-      <table class="table tableBorder">
+    <div class="tableResponsive">
+      <table class="table tableList dataTableBody">
         <thead>
           <tr>
             <th v-for="(col, ind) in columns" :key="'col-'+ind">
@@ -123,7 +151,7 @@ const sortColumns = (value: any) => {
               </template>
             </th>
           </tr>
-          <template v-if="filter">
+          <template v-if="filterBy === 'column'">
             <tr>
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
@@ -182,13 +210,13 @@ const sortColumns = (value: any) => {
       </div>
       <PaginationBox v-model="currentPage" :pages="getPages" :items="getPagination" />
     </div>
+    <slot name="footer"></slot>
   </div>
 </template>
 
 <style scoped>
-@use form {
-  field: input, check;
-}
+@use card;
+@use form;
 @use table;
 @use dataTable;
 </style>

@@ -4,15 +4,19 @@
 
 @alga {refs.name} {
   .{refs.name} {
-    ref: marginTop-0.25rem marginBottom-0.25rem;
+    ref: padding-0px;
     
     .{refs.name}Header, .{refs.name}Footer {
-      ref: display-flex justifyContent-spaceBetween alignItems-center;
-      ref: padding-0.5rem_0px gap-1rem flexWrap-wrap;
+      ref: padding-1.5rem display-flex justifyContent-spaceBetween alignItems-center;
+      ref: gap-1rem flexWrap-wrap;
     }
     
     .{refs.name}Body {
-      ref: padding-0.5rem_0px overflowX-auto;
+      ref: borderLeft-none borderRight-none;
+    }
+    
+    .{refs.name}SearchBy {
+      ref-width: auto !important;
     }
   }
   

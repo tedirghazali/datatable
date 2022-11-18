@@ -4,33 +4,25 @@ import { pages } from 'alga-js/array'
 import PaginationBox from './PaginationBox.vue'
 
 const props = defineProps<{ 
+  modelValue: any,
   columns: Array<any>,
   entries: Array<any>,
-  total: number,
-  select?: any,
-  limit?: number,
-  offset?: number,
-  search?: string,
-  filter?: any,
-  sort?: any,
+  select: any,
+  filterBy?: string,
   footers?: Array<any[]>
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:limit', value: number): void,
-  (e: 'update:offset', value: number): void,
-  (e: 'update:search', value: string): void,
-  (e: 'update:filter', value: any): void,
-  (e: 'update:sort', value: any): void,
+  (e: 'update:modelValue', value: any): void,
   (e: 'checklist', rows: any[]): void,
   (e: 'handler', value: any): void
 }>()
 
-const limitPerPage = ref<number>(props?.limit || 10)
-const currentPage = ref<number>(1)
-const ellipsis = ref<number>(2)
-const search = ref<string>(props?.search || '')
-const filter = ref<any>(props?.filter || {})
+const limitPerPage = ref<number>(props.modelValue?.limit || 10)
+const currentPage = ref<number>(props.modelValue?.page || 1)
+const ellipsis = ref<number>(props.modelValue?.ellipsis || 2)
+const search = ref<string>(props.modelValue?.search || '')
+const filter = ref<any>(props.modelValue?.filter || {})
 const sort = ref<any>({
   col: props.columns?.[0]?.prop || '',
   by: 'asc'
@@ -41,18 +33,24 @@ const getOffset = computed(() => {
 })
 
 const getPages = computed(() => {
-  return pages(props?.total, limitPerPage.value)
+  return pages(props.modelValue?.total, limitPerPage.value)
 })
 
 const refresh = () => {
-  emit('update:offset', getOffset.value)
-  emit('handler', {
+  const newInfo = {
     limit: limitPerPage.value,
+    page: currentPage.value,
     offset: getOffset.value,
     search: search.value,
     filter: filter.value,
-    sort: sort.value
-  })
+    sort: sort.value,
+    total: props.modelValue?.total,
+    length: props.modelValue?.length,
+    from: props.modelValue?.from,
+    to: props.modelValue?.to
+  }
+  emit('update:modelValue', newInfo)
+  emit('handler', newInfo)
 }
 
 const checkedAll = ref<any>(null)
@@ -76,20 +74,49 @@ const removeChecked = (item: string | number | any) => {
   const getIndex = checks.value.findIndex((fi: string | number | any) => fi === item)
   checks.value.splice(getIndex, 1)
 }
+
+const searchBy = ref('')
+const searchRef = ref(null)
+const searchTimer = ref(null)
+const searchHandler = () => {
+  clearTimeout(searchTimer.value)
+  searchTimer.value = setTimeout(() => {
+    filter.value = {}
+    if(searchRef.value) {
+      if(searchBy.value !== '') {
+        filter.value[searchBy.value] = searchRef.value.value
+        search.value = ''
+      } else {
+        search.value = searchRef.value.value
+      }
+      refresh()
+    }
+  }, 1000)
+}
 </script>
 
 <template>
-  <div class="dataTable">
+  <div class="card cardBody dataTable">
+    <slot name="header"></slot>
     <div class="dataTableHeader">
+      <div class="group">
+        <span class="button groupItem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointerEvents-none bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </span>
+        <input type="search" ref="searchRef" @input="searchHandler" @keyup.enter="searchHandler" class="input groupItem">
+        <select v-if="filterBy === 'search'" v-model="searchBy" @change="searchHandler" class="select groupItem dataTableSearchBy">
+          <option value="">All</option>
+          <option v-for="(col, ind) in columns" :key="ind" :value="col.prop">{{ col.text }}</option>
+        </select>
+      </div>
       <div>
         <slot></slot>
       </div>
-      <div>
-        <input type="text" v-model="search" class="input" placeholder="Search here..." @keyup.enter="emit('update:search', search); refresh();"  @mouseleave="emit('update:search', search); refresh();">
-      </div>
     </div>
-    <div class="dataTableBody">
-      <table class="table tableBorder">
+    <div class="tableResponsive">
+      <table class="table tableList dataTableBody">
         <thead>
           <tr>
             <th v-for="(col, ind) in columns" :key="'col-'+ind">
@@ -102,20 +129,20 @@ const removeChecked = (item: string | number | any) => {
               <template v-else>
                 <div class="dataTableSort">
                   <span>{{ col.text }}</span>
-                  <span v-if="sort.col === col.prop && sort.by === 'asc'" @click="sort.col = col.prop; sort.by = 'desc'; emit('update:sort', sort); refresh();">
+                  <span v-if="sort.col === col.prop && sort.by === 'asc'" @click="sort.col = col.prop; sort.by = 'desc'; refresh();">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down tableEvent" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371h-1.781zm1.57-.785L11 2.687h-.047l-.652 2.157h1.351z"/>
                       <path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V14zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"/>
                     </svg>
                   </span>
-                  <span v-else-if="sort.col === col.prop && sort.by === 'desc'" @click="sort.col = col.prop; sort.by = 'asc'; emit('update:sort', sort); refresh();">
+                  <span v-else-if="sort.col === col.prop && sort.by === 'desc'" @click="sort.col = col.prop; sort.by = 'asc'; refresh();">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-up-alt tableEvent" viewBox="0 0 16 16">
                       <path d="M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V7z"/>
                       <path fill-rule="evenodd" d="M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371h-1.781zm1.57-.785L11 9.688h-.047l-.652 2.156h1.351z"/>
                       <path d="M4.5 13.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z"/>
                     </svg>
                   </span>
-                  <span v-else @click="sort.col = col.prop; sort.by = 'asc'; emit('update:sort', sort); refresh();">
+                  <span v-else @click="sort.col = col.prop; sort.by = 'asc'; refresh();">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-numeric-up tableEvent" viewBox="0 0 16 16">
                       <path d="M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"></path>
                       <g transform="translate(7 0)">
@@ -127,18 +154,18 @@ const removeChecked = (item: string | number | any) => {
               </template>
             </th>
           </tr>
-          <template v-if="filter">
+          <template v-if="filterBy === 'filter'">
             <tr>
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
                   <template v-if="col.filterType === 'select'">
-                    <select class="select" v-model="filter[col.prop]" @change="emit('update:filter', filter); refresh();">
+                    <select class="select" v-model="filter[col.prop]" @change="refresh">
                       <option value="" selected></option>
                       <option v-for="(tkCol, tkInd) in (select[col.prop] || [])" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                     </select>
                   </template>
                   <template v-else>
-                    <input type="text" v-model="filter[col.prop]" class="input" @keyup.enter="emit('update:filter', filter); refresh();"  @mouseleave="emit('update:filter', filter); refresh();">
+                    <input type="text" v-model="filter[col.prop]" class="input" @keyup.enter="refresh"  @mouseleave="refresh">
                   </template>
                 </div>
               </th>
@@ -152,7 +179,7 @@ const removeChecked = (item: string | number | any) => {
                 <slot :name="col.prop" :entry="entry"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
-                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks); refresh();">
+                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks);">
               </div>
               <template v-else>{{ entry[col.prop] }}</template>
             </td>
@@ -173,7 +200,7 @@ const removeChecked = (item: string | number | any) => {
     <div class="dataTableFooter">
       <div class="dataTableLimit">
         <div class="dataTableSelect">
-          <select v-model="limitPerPage" @change="emit('update:limit', limitPerPage); refresh();" class="select">
+          <select v-model="limitPerPage" @change="refresh" class="select">
             <option :value="5">5</option>
             <option :value="7">7</option>
             <option :value="10">10</option>
@@ -182,17 +209,17 @@ const removeChecked = (item: string | number | any) => {
             <option :value="100">100</option>
           </select>
         </div>
-        <div class="dataTableInfo">from {{ Number(getOffset) + 1 }} to {{ Number(getOffset) + limitPerPage }} of {{ getPages }}</div>
+        <div class="dataTableInfo" v-show="modelValue.length > 0">from {{ modelValue.from }} to {{ (Number(modelValue.length) <= Number(modelValue.to)) ? modelValue.length : modelValue.to }} of {{ modelValue.length }}</div>
       </div>
-      <PaginationBox v-model="currentPage" :pages="getPages" @handler="refresh()" />
+      <PaginationBox v-model="currentPage" :pages="getPages" @handler="refresh" />
     </div>
+    <slot name="footer"></slot>
   </div>
 </template>
 
 <style scoped>
-@use form {
-  field: input, check;
-}
+@use card;
+@use form;
 @use table;
 @use dataTable;
 </style>
