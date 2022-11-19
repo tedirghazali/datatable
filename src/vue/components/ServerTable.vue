@@ -24,8 +24,8 @@ const ellipsis = ref<number>(props.modelValue?.ellipsis || 2)
 const search = ref<string>(props.modelValue?.search || '')
 const filter = ref<any>(props.modelValue?.filter || {})
 const sort = ref<any>({
-  col: props.columns?.[0]?.prop || '',
-  by: 'asc'
+  col: props.modelValue?.sort || props.columns?.[0]?.prop || '',
+  by: props.modelValue?.sortBy || 'asc'
 })
 
 const getOffset = computed(() => {
@@ -36,14 +36,35 @@ const getPages = computed(() => {
   return pages(props.modelValue?.total, limitPerPage.value)
 })
 
+const searchBy = ref<string>(props.modelValue?.searchBy || '')
+const searchRef = ref<any>(null)
+const searchTimer = ref<any>(undefined)
+const searchHandler = () => {
+  clearTimeout(searchTimer.value)
+  searchTimer.value = setTimeout(() => {
+    filter.value = {}
+    if(searchRef.value?.value) {
+      if(searchBy.value !== '') {
+        filter.value[searchBy.value] = searchRef.value.value
+        search.value = ''
+      } else {
+        search.value = searchRef.value.value
+      }
+      refresh()
+    }
+  }, 1000)
+}
+
 const refresh = () => {
   const newInfo = {
     limit: limitPerPage.value,
     page: currentPage.value,
     offset: getOffset.value,
     search: search.value,
+    searchBy: searchBy.value,
     filter: filter.value,
-    sort: sort.value,
+    sort: sort.value.col,
+    sortBy: sort.value.by,
     total: props.modelValue?.total,
     length: props.modelValue?.length,
     from: props.modelValue?.from,
@@ -74,25 +95,6 @@ const removeChecked = (item: string | number | any) => {
   const getIndex = checks.value.findIndex((fi: string | number | any) => fi === item)
   checks.value.splice(getIndex, 1)
 }
-
-const searchBy = ref('')
-const searchRef = ref(null)
-const searchTimer = ref(null)
-const searchHandler = () => {
-  clearTimeout(searchTimer.value)
-  searchTimer.value = setTimeout(() => {
-    filter.value = {}
-    if(searchRef.value) {
-      if(searchBy.value !== '') {
-        filter.value[searchBy.value] = searchRef.value.value
-        search.value = ''
-      } else {
-        search.value = searchRef.value.value
-      }
-      refresh()
-    }
-  }, 1000)
-}
 </script>
 
 <template>
@@ -119,7 +121,7 @@ const searchHandler = () => {
       <table class="table tableList dataTableBody">
         <thead>
           <tr>
-            <th v-for="(col, ind) in columns" :key="'col-'+ind">
+            <th v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
                 <input type="checkbox" ref="checkedAll" class="checkInput" @click="checks = (checkedAll.checked === true) ? flatByProp(col.prop) : []; refresh();">
               </div>
@@ -174,7 +176,7 @@ const searchHandler = () => {
         </thead>
         <tbody>
           <tr v-for="(entry, index) in entries" :key="'entry-'+index">
-            <td v-for="(col, ind) in columns" :key="'col-'+ind">
+            <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
                 <slot :name="col.prop" :entry="entry"></slot>
               </template>

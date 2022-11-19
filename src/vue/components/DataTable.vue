@@ -73,14 +73,14 @@ const sortColumns = (value: any) => {
   emit('sort', sort.value)
 }
 
-const searchBy = ref('')
-const searchRef = ref(null)
-const searchTimer = ref(null)
+const searchBy = ref<string>('')
+const searchRef = ref<any>(null)
+const searchTimer = ref<any>(undefined)
 const searchHandler = () => {
   clearTimeout(searchTimer.value)
   searchTimer.value = setTimeout(() => {
     filter.value = {}
-    if(searchRef.value) {
+    if(searchRef.value?.value) {
       if(searchBy.value !== '') {
         filter.value[searchBy.value] = searchRef.value.value
         search.value = ''
@@ -116,7 +116,7 @@ const searchHandler = () => {
       <table class="table tableList dataTableBody">
         <thead>
           <tr>
-            <th v-for="(col, ind) in columns" :key="'col-'+ind">
+            <th v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
                 <input type="checkbox" ref="checkedAll" class="checkInput" @change="checkedRows($event, col.prop)">
               </div>
@@ -171,7 +171,7 @@ const searchHandler = () => {
         </thead>
         <tbody>
           <tr v-for="(entry, index) in paginatedEntries" :key="'entry-'+index">
-            <td v-for="(col, ind) in columns" :key="'col-'+ind">
+            <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
                 <slot :name="col.prop" :entry="entry"></slot>
               </template>

@@ -12,7 +12,7 @@ const columns = [
   { prop: 'extension', text: 'Exten.', type: 'text', filter: true },
   { prop: 'startdate', text: 'Start Date', type: 'text', filter: true },
   { prop: 'salary', text: 'Salary', type: 'text', filter: true },
-  { prop: 'action', text: 'Action', type: 'slot', sort: false }
+  { prop: 'action', text: 'Action', type: 'slot', sort: false, align: 'right', width: '160px' }
 ]
 
 const total = ref(1)
@@ -36,9 +36,10 @@ const sort = ref<any>({
 
 const allData = ref<any>({
   limit: 10,
-  page: 1
+  page: 1,
   offset: 0,
   search: '',
+  searchBy: '',
   filter: {
     name: '',
     position: '',
@@ -47,17 +48,15 @@ const allData = ref<any>({
     startdate: '',
     salary: ''
   },
-  sort: {
-    col: 'id',
-    by: 'asc'
-  },
+  sort: 'id',
+  sortBy: 'desc',
   total: 1,
-  length: 100,
+  length: 10,
   from: 1,
   to: 10
 })
 
-const getEntries = ref(entries)
+const getEntries = ref(entries.slice(0, 10))
 const setEntries = async () => {
   const response = await fetch(`http://localhost:3000/?limit=${limit.value}&offset=${offset.value}&sort_col=${sort.value.col}&sort_by=${sort.value.by}&search=${search.value}&filter_name=${filter.value.name}&filter_position=${filter.value.position}&filter_office=${filter.value.office}&filter_extension=${filter.value.extension}&filter_startdate=${filter.value.startdate}&filter_salary=${filter.value.salary}`)
   const json = await response.json()
@@ -65,9 +64,9 @@ const setEntries = async () => {
   columnData.value = json.columns || {}
   total.value = json.total || 1
 }
-onMounted(setEntries)
+//onMounted(setEntries)
 
-watch(allData, setEntries)
+//watch(allData, setEntries)
 
 const pressButton = (val: any) => {
   alert(JSON.stringify(val))
@@ -76,12 +75,16 @@ const pressButton = (val: any) => {
 const checks = (val: any[]) => {
   console.log(val)
 }
+
+const serverHandler = (val: any) => {
+  console.log(val)
+}
 </script>
 
 <template>
   <div class="container my-30px">
     <h2>ServerTable</h2>
-    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" :total="total" @handler="setEntries">
+    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" :total="total" @handler="serverHandler">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
