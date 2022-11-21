@@ -87,8 +87,15 @@ const searchHandler = () => {
       } else {
         search.value = searchRef.value.value
       }
+      resetPage()
     }
   }, 1000)
+}
+
+const resetPage = () => {
+  if(currentPage.value > getPages.value) {
+    currentPage.value = getPages.value
+  }
 }
 </script>
 
@@ -156,13 +163,13 @@ const searchHandler = () => {
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
                   <template v-if="col.filterType === 'select'">
-                    <select class="select" v-model="filter[col.prop]" @change="emit('filter', filter)">
+                    <select class="select" v-model="filter[col.prop]" @change="emit('filter', filter); resetPage();">
                       <option value="" selected></option>
                       <option v-for="(tkCol, tkInd) in getColumnData(col.prop)" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                     </select>
                   </template>
                   <template v-else>
-                    <input type="text" v-model="filter[col.prop]" class="input" @input="emit('filter', filter)">
+                    <input type="text" v-model="filter[col.prop]" class="input" @input="emit('filter', filter); resetPage();">
                   </template>
                 </div>
               </th>
@@ -197,7 +204,7 @@ const searchHandler = () => {
     <div class="dataTableFooter">
       <div class="dataTableLimit">
         <div class="dataTableSelect">
-          <select v-model="limitPerPage" class="select">
+          <select v-model="limitPerPage" class="select" @change="resetPage();">
             <option :value="5">5</option>
             <option :value="7">7</option>
             <option :value="10">10</option>

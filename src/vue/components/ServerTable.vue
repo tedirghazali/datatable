@@ -50,6 +50,7 @@ const searchHandler = () => {
       } else {
         search.value = searchRef.value.value
       }
+      resetPage()
       refresh()
     }
   }, 1000)
@@ -94,6 +95,10 @@ const removeChecked = (item: string | number | any) => {
   //@ts-ignore
   const getIndex = checks.value.findIndex((fi: string | number | any) => fi === item)
   checks.value.splice(getIndex, 1)
+}
+
+const resetPage = () => {
+  currentPage.value = 1
 }
 </script>
 
@@ -161,13 +166,13 @@ const removeChecked = (item: string | number | any) => {
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
                   <template v-if="col.filterType === 'select'">
-                    <select class="select" v-model="filter[col.prop]" @change="refresh">
+                    <select class="select" v-model="filter[col.prop]" @change="resetPage(); refresh();">
                       <option value="" selected></option>
                       <option v-for="(tkCol, tkInd) in (select[col.prop] || [])" :key="tkInd" :value="tkCol">{{ tkCol }}</option>
                     </select>
                   </template>
                   <template v-else>
-                    <input type="text" v-model="filter[col.prop]" class="input" @keyup.enter="refresh"  @mouseleave="refresh">
+                    <input type="text" v-model="filter[col.prop]" class="input" @keyup.enter="resetPage(); refresh();"  @mouseleave="resetPage(); refresh();">
                   </template>
                 </div>
               </th>
@@ -202,7 +207,7 @@ const removeChecked = (item: string | number | any) => {
     <div class="dataTableFooter">
       <div class="dataTableLimit">
         <div class="dataTableSelect">
-          <select v-model="limitPerPage" @change="refresh" class="select">
+          <select v-model="limitPerPage" @change="resetPage(); refresh();" class="select">
             <option :value="5">5</option>
             <option :value="7">7</option>
             <option :value="10">10</option>

@@ -84,7 +84,7 @@ const serverHandler = (val: any) => {
 <template>
   <div class="container my-30px">
     <h2>ServerTable</h2>
-    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" :total="total" @handler="serverHandler">
+    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" @handler="serverHandler">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
