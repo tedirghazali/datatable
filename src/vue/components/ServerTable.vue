@@ -42,11 +42,11 @@ const searchTimer = ref<any>(undefined)
 const searchHandler = () => {
   clearTimeout(searchTimer.value)
   searchTimer.value = setTimeout(() => {
+    search.value = ''
     filter.value = {}
     if(searchRef.value?.value) {
       if(searchBy.value !== '') {
         filter.value[searchBy.value] = searchRef.value.value
-        search.value = ''
       } else {
         search.value = searchRef.value.value
       }

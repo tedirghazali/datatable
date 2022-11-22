@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { pagination } from 'alga-js/array'
 
 const props = defineProps<{
@@ -15,6 +15,10 @@ const emit = defineEmits<{
 }>()
 
 const currentPage = ref<number>(props?.modelValue || 1)
+
+watch(() => props.modelValue, () => {
+  currentPage.value = props.modelValue
+})
 
 const getPagination = computed<any[]>(() => {
   let newPagination = []
