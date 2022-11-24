@@ -112,7 +112,9 @@ const resetPage = () => {
         <input type="search" ref="searchRef" @input="searchHandler" @keyup.enter="searchHandler" class="input groupItem">
         <select v-if="filterBy === 'search'" v-model="searchBy" @change="searchHandler" class="select groupItem dataTableSearchBy">
           <option value="">All</option>
-          <option v-for="(col, ind) in columns" :key="ind" :value="col.prop">{{ col.text }}</option>
+          <template v-for="(col, ind) in columns" :key="ind">
+            <option v-if="col?.filter" :value="col.prop">{{ col.text }}</option>
+          </template>
         </select>
       </div>
       <div>
