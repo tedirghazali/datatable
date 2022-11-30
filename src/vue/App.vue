@@ -83,21 +83,6 @@ const serverHandler = (val: any) => {
 
 <template>
   <div class="container my-30px">
-    <h2>ServerTable</h2>
-    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" filterBy="search" @handler="serverHandler">
-      <template #default>
-        <div class="d-flex gap-5px">
-          <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
-        </div>
-      </template>
-      <template v-slot:action="{ entry }">
-        <div class="d-flex gap-5px">
-          <button type="button" @click="pressButton(entry)" class="button warning-light bdColor-darken(warning,20) hover:warning-dark-20">Edit</button>
-          <button type="button" @click="pressButton(entry)" class="button danger-light bdColor-darken(danger,20) hover:danger-dark-20">Delete</button>
-        </div>
-      </template>
-    </ServerTable>
-    <p><br /></p>
     <h2>DataTable</h2>
     <DataTable :columns="columns" :entries="entries" filterBy="column" :sortBy="['id', 'asc']" @checklist="checks">
       <template #default>
@@ -112,6 +97,21 @@ const serverHandler = (val: any) => {
         </div>
       </template>
     </DataTable>
+    <p><br /></p>
+    <h2>ServerTable</h2>
+    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" filterBy="search" @handler="serverHandler">
+      <template #default>
+        <div class="d-flex gap-5px">
+          <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
+        </div>
+      </template>
+      <template v-slot:action="{ entry }">
+        <div class="d-flex gap-5px">
+          <button type="button" @click="pressButton(entry)" class="button warning-light bdColor-darken(warning,20) hover:warning-dark-20">Edit</button>
+          <button type="button" @click="pressButton(entry)" class="button danger-light bdColor-darken(danger,20) hover:danger-dark-20">Delete</button>
+        </div>
+      </template>
+    </ServerTable>
   </div>
 </template>
 
