@@ -18,6 +18,10 @@
     .{refs.name}SearchBy {
       ref-width: auto !important;
     }
+    
+    .{refs.name}Empty {
+      ref: textAlign-center opacity-0.6;
+    }
   }
   
   .{refs.name}Limit {

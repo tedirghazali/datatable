@@ -7,8 +7,9 @@ const props = defineProps<{
   modelValue: any,
   columns: Array<any>,
   entries: Array<any>,
-  select: any,
+  select?: any,
   filterBy?: string,
+  filterDelay?: number,
   footers?: Array<any[]>
 }>()
 
@@ -53,7 +54,7 @@ const searchHandler = () => {
       resetPage()
       refresh()
     }
-  }, 1000)
+  }, (props?.filterDelay || 1000))
 }
 
 const refresh = () => {
@@ -99,6 +100,15 @@ const removeChecked = (item: string | number | any) => {
 
 const resetPage = () => {
   currentPage.value = 1
+}
+
+const filterTimer = ref<any>(undefined)
+const filterHandler = (propVal: string) => {
+  clearTimeout(filterTimer.value)
+  filterTimer.value = setTimeout(() => {
+    resetPage()
+    refresh()
+  }, (props?.filterDelay || 1000))
 }
 </script>
 
@@ -163,7 +173,7 @@ const resetPage = () => {
               </template>
             </th>
           </tr>
-          <template v-if="filterBy === 'filter'">
+          <template v-if="filterBy === 'column' || filterBy === 'filter'">
             <tr>
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
@@ -174,7 +184,7 @@ const resetPage = () => {
                     </select>
                   </template>
                   <template v-else>
-                    <input type="text" v-model="filter[col.prop]" class="input" @keyup.enter="resetPage(); refresh();"  @mouseleave="resetPage(); refresh();">
+                    <input type="text" v-model="filter[col.prop]" class="input" @input="filterHandler(col.prop)">
                   </template>
                 </div>
               </th>
@@ -182,6 +192,9 @@ const resetPage = () => {
           </template>
         </thead>
         <tbody>
+          <tr v-if="Number(entries.length) === 0">
+            <td :colspan="columns.length" class="dataTableEmpty">The data on this page is not yet available.</td>
+          </tr>
           <tr v-for="(entry, index) in entries" :key="'entry-'+index">
             <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">

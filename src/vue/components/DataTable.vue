@@ -6,6 +6,7 @@ import PaginationBox from './PaginationBox.vue'
 const props = defineProps<{ 
   columns: Array<any>,
   filterBy?: string,
+  filterDelay?: number,
   sortBy?: Array<string>,
   entries: Array<any>,
   footers?: Array<any[]>
@@ -89,13 +90,27 @@ const searchHandler = () => {
       }
       resetPage()
     }
-  }, 1000)
+  }, (props?.filterDelay || 500))
 }
 
 const resetPage = () => {
   if(currentPage.value >= getPages.value) {
     currentPage.value = getPages.value
   }
+}
+
+const filterByInput = ref<any>({})
+const filterTimer = ref<any>(undefined)
+const filterHandler = (propVal: string) => {
+  clearTimeout(filterTimer.value)
+  filterTimer.value = setTimeout(() => {
+    filter.value[propVal] = ''
+    if(filterByInput.value?.[propVal] && filterByInput.value?.[propVal] !== '') {
+      filter.value[propVal] = filterByInput.value[propVal]
+    }
+    emit('filter', filter.value) 
+    resetPage()
+  }, (props?.filterDelay || 1000))
 }
 </script>
 
@@ -160,7 +175,7 @@ const resetPage = () => {
               </template>
             </th>
           </tr>
-          <template v-if="filterBy === 'column'">
+          <template v-if="filterBy === 'column' || filterBy === 'filter'">
             <tr>
               <th v-for="(col, ind) in columns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
@@ -171,7 +186,7 @@ const resetPage = () => {
                     </select>
                   </template>
                   <template v-else>
-                    <input type="text" v-model="filter[col.prop]" class="input" @input="emit('filter', filter); resetPage();">
+                    <input type="text" v-model="filterByInput[col.prop]" class="input" @input="filterHandler(col.prop)">
                   </template>
                 </div>
               </th>
@@ -179,6 +194,9 @@ const resetPage = () => {
           </template>
         </thead>
         <tbody>
+          <tr v-if="Number(paginatedEntries.length) === 0">
+            <td :colspan="columns.length" class="dataTableEmpty">The data on this page is not yet available.</td>
+          </tr>
           <tr v-for="(entry, index) in paginatedEntries" :key="'entry-'+index">
             <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
