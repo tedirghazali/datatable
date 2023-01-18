@@ -1,6 +1,6 @@
 import { computed, Ref } from 'vue'
 
-export default function useFilter(getEntries: Ref<any[]>, getSort: Ref<any>) {
+export default function useSort(getEntries: Ref<any[]>, getSort: Ref<any>) {
   
   const sortedEntries = computed<any[]>(() => {
     let newEntries: any[] = getEntries.value

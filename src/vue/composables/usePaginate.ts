@@ -7,7 +7,11 @@ export default function usePaginate(getEntries: Ref<any[]>, getLimitPerPage: Ref
   })
   
   const getPages = computed<number>(() => {
-    return Math.ceil(getEntries.value.length / getLimitPerPage.value)
+    let newPages: number = Math.ceil(getEntries.value.length / getLimitPerPage.value)
+    if(newPages < 1) {
+      newPages = 1
+    }
+    return newPages
   })
   
   const paginatedEntries = computed<any[]>(() => {
@@ -54,12 +58,28 @@ export default function usePaginate(getEntries: Ref<any[]>, getLimitPerPage: Ref
     }
     return filterMax
   })
+   
+  const handleEllipsis = (page: number, ellipsis: number) => {
+    let newEllipsis: number = ellipsis
+    let divideNum: number = Math.floor(Number(ellipsis) / 2)
+    let currentEllipsis: number = ellipsis
+    if(Number(ellipsis) % 2 === 0) { //check if even/odd number
+      currentEllipsis = Number(ellipsis) + 1
+    }
+    if(Number(page) <= divideNum) {
+      newEllipsis = currentEllipsis - (Number(page) - 1)
+    } else {
+      newEllipsis = divideNum
+    }
+    return newEllipsis
+  }
   
   return {
     getOffset,
     getPages,
     paginatedEntries,
     getPageInfo,
-    getPagination
+    getPagination,
+    handleEllipsis
   }
 }

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, toRef, computed } from 'vue'
-import { useTable, useFilter, useSort, usePaginate } from 'alga-vue'
+import useTable from '../composables/useTable'
+import useFilter from '../composables/useFilter'
+import useSort from '../composables/useSort'
+import usePaginate from '../composables/usePaginate'
 import PaginationBox from './PaginationBox.vue'
 
 const props = defineProps<{ 
@@ -9,7 +12,8 @@ const props = defineProps<{
   filterDelay?: number,
   sortBy?: Array<string>,
   entries: Array<any>,
-  footers?: Array<any[]>
+  footers?: Array<any[]>,
+  placeholder?: string
 }>()
 
 const emit = defineEmits<{
@@ -193,14 +197,14 @@ const filterHandler = (propVal: string) => {
             </tr>
           </template>
         </thead>
-        <tbody>
+        <tbody :style="{height: (paginatedEntries.length <= 4 ? 240 : (Number(paginatedEntries.length) * 60)) + 'px'}">
           <tr v-if="Number(paginatedEntries.length) === 0">
-            <td :colspan="columns.length" class="dataTableEmpty">The data on this page is not yet available.</td>
+            <td :colspan="columns.length" class="dataTableEmpty">{{ placeholder || 'The data on this page is not yet available.' }}</td>
           </tr>
           <tr v-for="(entry, index) in paginatedEntries" :key="'entry-'+index">
             <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
-                <slot :name="col.prop" :entry="entry"></slot>
+                <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
                 <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @change="singleCheck($event, entry[col.prop])">

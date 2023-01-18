@@ -10,7 +10,8 @@ const props = defineProps<{
   select?: any,
   filterBy?: string,
   filterDelay?: number,
-  footers?: Array<any[]>
+  footers?: Array<any[]>,
+  placeholder?: string
 }>()
 
 const emit = defineEmits<{
@@ -191,14 +192,14 @@ const filterHandler = (propVal: string) => {
             </tr>
           </template>
         </thead>
-        <tbody>
+        <tbody :style="{height: (entries.length <= 4 ? 240 : (Number(entries.length) * 60)) + 'px'}">
           <tr v-if="Number(entries.length) === 0">
-            <td :colspan="columns.length" class="dataTableEmpty">The data on this page is not yet available.</td>
+            <td :colspan="columns.length" class="dataTableEmpty">{{ placeholder || 'The data on this page is not yet available.' }}</td>
           </tr>
           <tr v-for="(entry, index) in entries" :key="'entry-'+index">
             <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
-                <slot :name="col.prop" :entry="entry"></slot>
+                <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
                 <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks);">

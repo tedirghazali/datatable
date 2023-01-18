@@ -9,7 +9,7 @@ export default function useFilter(getEntries: Ref<any[]>, getSearch: Ref<string>
         for(const key of Object.keys(obj)) {
           if(isNaN(obj[key]) === false && Number(obj[key]) === Number(getSearch.value)) {
             return true
-          } else if(typeof obj[key] === 'string' && obj[key].toLowerCase().includes(getSearch.value.toLowerCase())) {
+          } else if(typeof obj[key] === 'string' && String(obj[key]).toLowerCase().includes(String(getSearch.value).toLowerCase())) {
             return true
           }
         }
@@ -40,7 +40,7 @@ export default function useFilter(getEntries: Ref<any[]>, getSearch: Ref<string>
         if(ftrKey in obj) {
           if(isNaN(obj[ftrKey]) === false && Number(obj[ftrKey]) === Number(getCleanFilter.value[ftrKey])) {
             return true
-          } else if(typeof obj[ftrKey] === 'string' && obj[ftrKey].toLowerCase().includes(getCleanFilter.value[ftrKey].toLowerCase())) {
+          } else if(typeof obj[ftrKey] === 'string' && String(obj[ftrKey]).toLowerCase().includes(String(getCleanFilter.value[ftrKey]).toLowerCase())) {
             return true
           }
         }
