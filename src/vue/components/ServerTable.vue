@@ -207,6 +207,11 @@ const filterHandler = (propVal: string) => {
               <template v-else>{{ entry[col.prop] }}</template>
             </td>
           </tr>
+          <template v-if="Number(entries.length) >= 1 && Number(entries.length) <= 3">
+            <tr v-for="num in (4 - Number(entries.length))" style="height: 60px;">
+              <td v-if="num === 1" :rowspan="4 - Number(entries.length)" :colspan="columns.length"></td>
+            </tr>
+          </template>
         </tbody>
         <tfoot v-if="footers && Array.isArray(footers[0])">
           <tr v-for="(footer, index) in footers" :key="'row-'+index">
