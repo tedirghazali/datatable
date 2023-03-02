@@ -20,6 +20,11 @@ const emit = defineEmits<{
   (e: 'handler', value: any): void
 }>()
 
+const getColumns = ref(props?.columns ||[])
+watch(() => props?.columns, () => {
+  getColumns.value = props.columns
+})
+
 const limitPerPage = ref<number>(props.modelValue?.limit || 10)
 const currentPage = ref<number>(props.modelValue?.page || 1)
 const ellipsis = ref<number>(props.modelValue?.ellipsis || 2)
@@ -133,7 +138,7 @@ const filterHandler = (propVal: string) => {
         <input type="search" ref="searchRef" @input="searchHandler" @keyup.enter="searchHandler" class="input groupItem">
         <select v-if="filterBy === 'search'" v-model="searchBy" @change="searchHandler" class="select groupItem dataTableSearchBy">
           <option value="">All</option>
-          <template v-for="(col, ind) in columns" :key="ind">
+          <template v-for="(col, ind) in getColumns" :key="ind">
             <option v-if="col?.filter" :value="col.prop">{{ col.text }}</option>
           </template>
         </select>
@@ -146,7 +151,7 @@ const filterHandler = (propVal: string) => {
       <table class="table tableList dataTableBody">
         <thead>
           <tr>
-            <th v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
+            <th v-for="(col, ind) in getColumns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
                 <input type="checkbox" ref="checkedAll" class="checkInput" @click="checks = (checkedAll.checked === true) ? flatByProp(col.prop) : []; refresh();">
               </div>
@@ -183,7 +188,7 @@ const filterHandler = (propVal: string) => {
           </tr>
           <template v-if="filterBy === 'column' || filterBy === 'filter'">
             <tr>
-              <th v-for="(col, ind) in columns" :key="'filter-'+ind">
+              <th v-for="(col, ind) in getColumns" :key="'filter-'+ind">
                 <div v-if="col.filter === true && 'prop' in col">
                   <template v-if="col.filterType === 'select'">
                     <select class="select" v-model="filter[col.prop]" @change="resetPage(); refresh();">
@@ -201,10 +206,10 @@ const filterHandler = (propVal: string) => {
         </thead>
         <tbody :style="{height: (entries.length <= 4 ? 240 : (Number(entries.length) * 60)) + 'px'}">
           <tr v-if="Number(entries.length) === 0">
-            <td :colspan="columns.length" class="dataTableEmpty">{{ placeholder || 'The data on this page is not yet available.' }}</td>
+            <td :colspan="getColumns.length" class="dataTableEmpty">{{ placeholder || 'The data on this page is not yet available.' }}</td>
           </tr>
           <tr v-for="(entry, index) in entries" :key="'entry-'+index">
-            <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
+            <td v-for="(col, ind) in getColumns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <template v-if="col.type === 'slot'">
                 <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
@@ -216,7 +221,7 @@ const filterHandler = (propVal: string) => {
           </tr>
           <template v-if="Number(entries.length) >= 1 && Number(entries.length) <= 3">
             <tr v-for="num in (4 - Number(entries.length))" style="height: 60px;">
-              <td v-if="num === 1" :rowspan="4 - Number(entries.length)" :colspan="columns.length"></td>
+              <td v-if="num === 1" :rowspan="4 - Number(entries.length)" :colspan="getColumns.length"></td>
             </tr>
           </template>
         </tbody>
