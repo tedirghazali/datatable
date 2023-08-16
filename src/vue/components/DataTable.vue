@@ -13,7 +13,8 @@ const props = defineProps<{
   sortBy?: Array<string>,
   entries: Array<any>,
   footers?: Array<any[]>,
-  placeholder?: string
+  placeholder?: string,
+  translate?: any
 }>()
 
 const emit = defineEmits<{
@@ -130,7 +131,7 @@ const filterHandler = (propVal: string) => {
         </span>
         <input type="search" ref="searchRef" @input="searchHandler" @keyup.enter="searchHandler" class="input groupItem">
         <select v-if="filterBy === 'search'" v-model="searchBy" @change="searchHandler" class="select groupItem dataTableSearchBy">
-          <option value="">All</option>
+          <option value="">{{ translate?.all || 'All' }}</option>
           <template v-for="(col, ind) in columns" :key="ind">
             <option v-if="col?.filter" :value="col.prop">{{ col.text }}</option>
           </template>
@@ -242,7 +243,7 @@ const filterHandler = (propVal: string) => {
             <option :value="100">100</option>
           </select>
         </div>
-        <div class="dataTableInfo">from {{ getPageInfo.start }} to {{ getPageInfo.end }} of {{getPageInfo.length }}</div>
+        <div class="dataTableInfo">{{ translate?.from || 'from' }} {{ getPageInfo.start }} {{ translate?.to || 'to' }} {{ getPageInfo.end }} {{ translate?.of || 'of' }} {{getPageInfo.length }}</div>
       </div>
       <PaginationBox v-model="currentPage" :pages="getPages" :items="getPagination" />
     </div>
