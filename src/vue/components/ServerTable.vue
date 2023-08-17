@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed, watch } from 'vue'
+import { ref, toRef, computed, watch, onMounted } from 'vue'
 import { pages } from 'alga-js/array'
 import PaginationBox from './PaginationBox.vue'
 
@@ -31,6 +31,7 @@ const currentPage = ref<number>(props.modelValue?.page || 1)
 const ellipsis = ref<number>(props.modelValue?.ellipsis || 2)
 const search = ref<string>(props.modelValue?.search || '')
 const searchBy = ref<string>(props.modelValue?.searchBy || '')
+const searchRef = ref<any>(null)
 const filter = ref<any>(props.modelValue?.filter || {})
 const sort = ref<any>({
   col: props.modelValue?.sort || props.columns?.[0]?.prop || '',
@@ -44,6 +45,15 @@ watch(() => props.modelValue, () => {
   }
   search.value = props.modelValue?.search || ''
   searchBy.value = props.modelValue?.searchBy || ''
+  if(searchRef.value !== null) {
+    searchRef.value.value = search.value
+  }
+})
+
+onMounted(() => {
+  if(searchRef.value !== null) {
+    searchRef.value.value = props.modelValue?.search || ''
+  }
 })
 
 const getOffset = computed(() => {
@@ -54,7 +64,6 @@ const getPages = computed(() => {
   return pages(props.modelValue?.total, limitPerPage.value)
 })
 
-const searchRef = ref<any>(null)
 const searchTimer = ref<any>(undefined)
 const searchHandler = () => {
   clearTimeout(searchTimer.value)
