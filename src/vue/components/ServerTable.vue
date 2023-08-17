@@ -30,6 +30,7 @@ const limitPerPage = ref<number>(props.modelValue?.limit || 10)
 const currentPage = ref<number>(props.modelValue?.page || 1)
 const ellipsis = ref<number>(props.modelValue?.ellipsis || 2)
 const search = ref<string>(props.modelValue?.search || '')
+const searchBy = ref<string>(props.modelValue?.searchBy || '')
 const filter = ref<any>(props.modelValue?.filter || {})
 const sort = ref<any>({
   col: props.modelValue?.sort || props.columns?.[0]?.prop || '',
@@ -41,6 +42,8 @@ watch(() => props.modelValue, () => {
     col: props.modelValue?.sort || props.columns?.[0]?.prop || '',
     by: props.modelValue?.sortBy || ''
   }
+  search.value = props.modelValue?.search || ''
+  searchBy.value = props.modelValue?.searchBy || ''
 })
 
 const getOffset = computed(() => {
@@ -51,7 +54,6 @@ const getPages = computed(() => {
   return pages(props.modelValue?.total, limitPerPage.value)
 })
 
-const searchBy = ref<string>(props.modelValue?.searchBy || '')
 const searchRef = ref<any>(null)
 const searchTimer = ref<any>(undefined)
 const searchHandler = () => {
