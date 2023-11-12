@@ -72,8 +72,10 @@ const pressButton = (val: any) => {
   alert(JSON.stringify(val))
 }
 
-const checks = (val: any[]) => {
-  console.log(val)
+const checks = ref<any[]>([1, 3])
+const checkLists = (val: any[]) => {
+  checks.value = val
+  console.log(checks.value)
 }
 
 const serverHandler = (val: any) => {
@@ -84,7 +86,7 @@ const serverHandler = (val: any) => {
 <template>
   <div class="container my-30px">
     <h2>DataTable</h2>
-    <DataTable :columns="columns" :entries="entries" filterBy="column" :sortBy="['id', 'asc']" @checklist="checks">
+    <DataTable :columns="columns" :entries="entries" filterBy="column" :sortBy="['id', 'asc']" @checklist="checkLists" :checks="checks">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>
@@ -99,7 +101,7 @@ const serverHandler = (val: any) => {
     </DataTable>
     <p><br /></p>
     <h2>ServerTable</h2>
-    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" filterBy="search" @handler="serverHandler">
+    <ServerTable v-model="allData" :columns="columns" :entries="getEntries" :select="columnData" filterBy="search" @handler="serverHandler" @checklist="checkLists" :checks="checks" checkprop="id">
       <template #default>
         <div class="d-flex gap-5px">
           <button type="button" @click="pressButton(['add new'])" class="button primary-light bdColor-darken(primary,20) hover:primary-dark-20">Add New</button>

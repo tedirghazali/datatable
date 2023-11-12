@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, toRef, computed, watch, onMounted } from 'vue'
+//@ts-ignore
 import { pages } from 'alga-js/array'
 import PaginationBox from './PaginationBox.vue'
 
@@ -12,7 +13,9 @@ const props = defineProps<{
   filterDelay?: number,
   footers?: Array<any[]>,
   placeholder?: string,
-  translate?: any
+  translate?: any,
+  checks?: Array<any>,
+  checkprop?: string
 }>()
 
 const emit = defineEmits<{
@@ -70,11 +73,11 @@ const searchHandler = () => {
   searchTimer.value = setTimeout(() => {
     search.value = ''
     filter.value = {}
-    if(searchRef.value?.value) {
+    if(searchRef.value) {
       if(searchBy.value !== '') {
-        filter.value[searchBy.value] = searchRef.value.value
+        filter.value[searchBy.value] = searchRef.value?.value || ''
       } else {
-        search.value = searchRef.value.value
+        search.value = searchRef.value?.value || ''
       }
       resetPage()
       refresh()
@@ -102,15 +105,56 @@ const refresh = () => {
 }
 
 const checkedAll = ref<any>(null)
+const checkedAllBoolean = ref<boolean>(false)
 const checkedRefs = ref<any[]>([])
 const setCheckedRef = (el: any) => {
   if (el) {
     checkedRefs.value.push(el)
   }
 }
-const checks = ref<any[]>([])
-const checkedRows = (rows: any[]) => {
-  checks.value = rows
+const checks = ref<any[]>(props?.checks || [])
+watch(() => props?.checks, () => {
+  checks.value = props?.checks || []
+  if(props.entries && props?.checkprop) {
+    //@ts-ignore
+    if(Number(props.entries.filter((i: any) => checks.value.includes(i[props.checkprop])).length) === Number(limitPerPage.value)) {
+      if(checkedAll.value) {
+        checkedAll.value.checked = true
+      }
+      checkedAllBoolean.value = true
+    } else {
+      if(checkedAll.value) {
+        checkedAll.value.checked = false
+      }
+      checkedAllBoolean.value = false
+    }
+  }
+})
+
+const checkRows = (e: any, colProp: string) => {
+  if(e.target.checked === true) {
+    checks.value = props.entries.map((mi: any) => mi[colProp])
+    checkedAllBoolean.value = true
+  } else {
+    checks.value = []
+    checkedAllBoolean.value = false
+  }
+  refresh()
+  emit('checklist', checks.value)
+}
+
+const checkSingleRow = (colProp: string) => {
+  if(Number(props.entries.filter((i: any) => checks.value.includes(i[colProp])).length) === Number(limitPerPage.value)) {
+    if(checkedAll.value) {
+      checkedAll.value.checked = true
+    }
+    checkedAllBoolean.value = true
+  } else {
+    if(checkedAll.value) {
+      checkedAll.value.checked = false
+    }
+    checkedAllBoolean.value = false
+  }
   emit('checklist', checks.value)
 }
 const flatByProp = (prop: string) => {
@@ -165,7 +209,7 @@ const filterHandler = (propVal: string) => {
           <tr>
             <th v-for="(col, ind) in getColumns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
-                <input type="checkbox" ref="checkedAll" class="checkInput" @click="checks = (checkedAll.checked === true) ? flatByProp(col.prop) : []; refresh();">
+                <input type="checkbox" ref="checkedAll" class="checkInput" @click="checkRows($event, col.prop)" :checked="checkedAllBoolean">
               </div>
               <template v-else-if="col.sort === false">
                 <span>{{ col.text }}</span>
@@ -226,7 +270,7 @@ const filterHandler = (propVal: string) => {
                 <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
-                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); emit('checklist', checks);">
+                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true && !checks.includes(entry[col.prop])) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); checkSingleRow(col.prop);">
               </div>
               <template v-else>{{ entry[col.prop] }}</template>
             </td>

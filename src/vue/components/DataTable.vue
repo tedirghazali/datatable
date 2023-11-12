@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed } from 'vue'
+import { ref, toRef, computed, watch } from 'vue'
 import useTable from '../composables/useTable'
 import useFilter from '../composables/useFilter'
 import useSort from '../composables/useSort'
@@ -14,7 +14,9 @@ const props = defineProps<{
   entries: Array<any>,
   footers?: Array<any[]>,
   placeholder?: string,
-  translate?: any
+  translate?: any,
+  checks?: Array<any>,
+  checkprop?: string
 }>()
 
 const emit = defineEmits<{
@@ -39,19 +41,40 @@ const { sortedEntries } = useSort(filteredEntries, sort)
 const { getOffset, getPages, paginatedEntries, getPagination, getPageInfo } = usePaginate(sortedEntries, limitPerPage, currentPage, ellipsis)
 
 const checkedAll = ref<any>(null)
+const checkedAllBoolean = ref<boolean>(false)
 const checkedRefs = ref<any[]>([])
 const setCheckedRef = (el: any) => {
   if (el) {
     checkedRefs.value.push(el)
   }
 }
-const checks = ref<any[]>([])
+const checks = ref<any[]>(props?.checks || [])
+watch(() => props?.checks, () => {
+  checks.value = props?.checks || []
+  if(props?.checkprop) {
+    //@ts-ignore
+    if(Number(paginatedEntries.value.filter((i: any) => checks.value.includes(i[props.checkprop])).length) === Number(limitPerPage.value)) {
+      if(checkedAll.value) {
+        checkedAll.value.checked = true
+      }
+      checkedAllBoolean.value = true
+    } else {
+      if(checkedAll.value) {
+        checkedAll.value.checked = false
+      }
+      checkedAllBoolean.value = false
+    }
+  }
+})
+
 const checkedRows = (e: any, colProp: string) => {
   if(e.target.checked === true) {
     //@ts-ignore
     checks.value = paginatedEntries.value.map((mi: any) => mi[colProp])
+    checkedAllBoolean.value = true
   } else { 
     checks.value = [] 
+    checkedAllBoolean.value = false
   }
   emit('checklist', checks.value)
 }
@@ -61,11 +84,22 @@ const removeChecked = (item: string | number | any) => {
   checks.value.splice(getIndex, 1)
 }
 
-const singleCheck = (e: any, entryProp: string | number) => {
+const singleCheck = (e: any, entryProp: string | number, colProp: string) => {
   if(e.target.checked === true && !checks.value.includes(entryProp)) { 
     checks.value.push(entryProp) 
   } else { 
     removeChecked(entryProp)
+  }
+  if(Number(paginatedEntries.value.filter((i: any) => checks.value.includes(i[colProp])).length) === Number(limitPerPage.value)) {
+    if(checkedAll.value) {
+      checkedAll.value.checked = true
+    }
+    checkedAllBoolean.value = true
+  } else {
+    if(checkedAll.value) {
+      checkedAll.value.checked = false
+    }
+    checkedAllBoolean.value = false
   }
   emit('checklist', checks.value)
 }
@@ -147,7 +181,7 @@ const filterHandler = (propVal: string) => {
           <tr>
             <th v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
-                <input type="checkbox" ref="checkedAll" class="checkInput" @change="checkedRows($event, col.prop)">
+                <input type="checkbox" ref="checkedAll" class="checkInput" @change="checkedRows($event, col.prop)" :checked="checkedAllBoolean">
               </div>
               <template v-else-if="col.sort === false">
                 <span>{{ col.text }}</span>
@@ -208,7 +242,7 @@ const filterHandler = (propVal: string) => {
                 <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
-                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @change="singleCheck($event, entry[col.prop])">
+                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @change="singleCheck($event, entry[col.prop], col.prop)">
               </div>
               <template v-else>{{ entry[col.prop] }}</template>
             </td>
