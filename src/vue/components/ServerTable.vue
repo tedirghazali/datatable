@@ -116,8 +116,9 @@ const checks = ref<any[]>(props?.checks || [])
 watch(() => props?.checks, () => {
   checks.value = props?.checks || []
   if(props.entries && props?.checkprop) {
+    let limitChecks = Number(props.entries.length) < Number(limitPerPage.value) ? Number(props.entries.length) : Number(limitPerPage.value)
     //@ts-ignore
-    if(Number(props.entries.filter((i: any) => checks.value.includes(i[props.checkprop])).length) === Number(limitPerPage.value)) {
+    if(Number(props.entries.filter((i: any) => checks.value.includes(i[props.checkprop])).length) === Number(limitChecks)) {
       if(checkedAll.value) {
         checkedAll.value.checked = true
       }
@@ -144,7 +145,8 @@ const checkRows = (e: any, colProp: string) => {
 }
 
 const checkSingleRow = (colProp: string) => {
-  if(Number(props.entries.filter((i: any) => checks.value.includes(i[colProp])).length) === Number(limitPerPage.value)) {
+  let limitChecks = Number(props.entries.length) < Number(limitPerPage.value) ? Number(props.entries.length) : Number(limitPerPage.value)
+  if(Number(props.entries.filter((i: any) => checks.value.includes(i[colProp])).length) === Number(limitChecks)) {
     if(checkedAll.value) {
       checkedAll.value.checked = true
     }
