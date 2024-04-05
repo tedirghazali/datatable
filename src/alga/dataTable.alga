@@ -39,4 +39,8 @@
   .{refs.name}Sort {
     ref: display-flex justifyContent-spaceBetween;
   }
+  
+  .{refs.name}Event {
+    ref: pointerEvents-none;
+  }
 }

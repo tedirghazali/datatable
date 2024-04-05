@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRef, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 //@ts-ignore
 import { pages } from 'alga-js/array'
 import PaginationBox from './PaginationBox.vue'
@@ -159,10 +159,7 @@ const checkSingleRow = (colProp: string) => {
   }
   emit('checklist', checks.value)
 }
-const flatByProp = (prop: string) => {
-  //@ts-ignore
-  return props.entries.map((mi: any) => mi[prop])
-}
+
 const removeChecked = (item: string | number | any) => {
   //@ts-ignore
   const getIndex = checks.value.findIndex((fi: string | number | any) => fi === item)
@@ -189,7 +186,7 @@ const filterHandler = (propVal: string) => {
     <div class="dataTableHeader">
       <div class="group">
         <span class="button groupItem">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointerEvents-none bi bi-search" viewBox="0 0 16 16">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="dataTableEvent bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
         </span>
@@ -211,7 +208,7 @@ const filterHandler = (propVal: string) => {
           <tr>
             <th v-for="(col, ind) in getColumns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
               <div class="check" v-if="col.type === 'checkbox'">
-                <input type="checkbox" ref="checkedAll" class="checkInput" @click="checkRows($event, col.prop)" :checked="checkedAllBoolean">
+                <input type="checkbox" ref="checkedAll" class="checkInput" @click.self="checkRows($event, col.prop)" :checked="checkedAllBoolean">
               </div>
               <template v-else-if="col.sort === false">
                 <span>{{ col.text }}</span>
@@ -219,21 +216,21 @@ const filterHandler = (propVal: string) => {
               <template v-else>
                 <div class="dataTableSort">
                   <span>{{ col.text }}</span>
-                  <span v-if="sort.col === col.prop && sort.by === 'asc'" @click="sort.col = col.prop; sort.by = 'desc'; refresh();">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down tableEvent" viewBox="0 0 16 16">
+                  <span v-if="sort.col === col.prop && sort.by === 'asc'" @click.self="sort.col = col.prop; sort.by = 'desc'; refresh();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-down dataTableEvent" viewBox="0 0 16 16">
                       <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371h-1.781zm1.57-.785L11 2.687h-.047l-.652 2.157h1.351z"/>
                       <path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V14zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"/>
                     </svg>
                   </span>
-                  <span v-else-if="sort.col === col.prop && sort.by === 'desc'" @click="sort.col = col.prop; sort.by = ''; refresh();">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-up-alt tableEvent" viewBox="0 0 16 16">
+                  <span v-else-if="sort.col === col.prop && sort.by === 'desc'" @click.self="sort.col = col.prop; sort.by = ''; refresh();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-alpha-up-alt dataTableEvent" viewBox="0 0 16 16">
                       <path d="M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V7z"/>
                       <path fill-rule="evenodd" d="M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371h-1.781zm1.57-.785L11 9.688h-.047l-.652 2.156h1.351z"/>
                       <path d="M4.5 13.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z"/>
                     </svg>
                   </span>
-                  <span v-else @click="sort.col = col.prop; sort.by = 'asc'; refresh();">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-numeric-up tableEvent" viewBox="0 0 16 16">
+                  <span v-else @click.self="sort.col = col.prop; sort.by = 'asc'; refresh();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-numeric-up dataTableEvent" viewBox="0 0 16 16">
                       <path d="M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z"></path>
                       <g transform="translate(7 0)">
                         <path d="M4.5 13.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z"></path>
@@ -272,7 +269,7 @@ const filterHandler = (propVal: string) => {
                 <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
               <div class="check" v-else-if="col.type === 'checkbox'">
-                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click="(checkedRefs[ind].checked === true && !checks.includes(entry[col.prop])) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); checkSingleRow(col.prop);">
+                <input type="checkbox" class="checkInput" :ref="setCheckedRef" :value="entry[col.prop]" :checked="checks.includes(entry[col.prop])" @click.self="(!checks.includes(entry[col.prop])) ? checks.push(entry[col.prop]) : removeChecked(entry[col.prop]); checkSingleRow(col.prop);">
               </div>
               <template v-else>{{ entry[col.prop] }}</template>
             </td>

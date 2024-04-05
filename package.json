@@ -1,6 +1,6 @@
 {
   "name": "tedir-table",
-  "version": "0.0.1-beta-4",
+  "version": "0.0.1-beta-6",
   "description": "Tedir Table is a Vue 3 & Web Component DataTable",
   "main": "dist/vue/tedir-table-vue.umd.js",
   "module": "dist/vue/tedir-table-vue.es.js",
@@ -44,8 +44,8 @@
   "homepage": "https://github.com/tedirghazali/datatable#readme",
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
-    "alga-css": "^1.0.0-beta-38",
-    "alga-js": "^0.1.0-beta-11",
+    "alga-css": "^1.0.0-beta-49",
+    "alga-js": "^0.1.0-beta-14",
     "alga-vue": "^0.0.1-stone-4",
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
