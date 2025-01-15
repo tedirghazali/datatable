@@ -1,6 +1,6 @@
 {
   "name": "tedir-table",
-  "version": "0.0.1-beta-8",
+  "version": "0.0.1-beta-9",
   "description": "Tedir Table is a Vue 3 & Web Component DataTable",
   "main": "dist/vue/tedir-table-vue.umd.js",
   "module": "dist/vue/tedir-table-vue.es.js",

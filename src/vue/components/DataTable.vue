@@ -239,7 +239,7 @@ const filterHandler = (propVal: string) => {
             <td :colspan="columns.length" class="dataTableEmpty">{{ placeholder || 'The data on this page is not yet available.' }}</td>
           </tr>
           <tr v-for="(entry, index) in paginatedEntries" :key="'entry-'+index">
-            <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width}">
+            <td v-for="(col, ind) in columns" :key="'col-'+ind" :style="{'text-align': col?.align, width: col?.width, ...(col?.style ?? {})}">
               <template v-if="col.type === 'slot'">
                 <slot :name="col.prop" :entry="entry" :index="index"></slot>
               </template>
