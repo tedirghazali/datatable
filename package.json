@@ -44,9 +44,6 @@
   "homepage": "https://github.com/tedirghazali/datatable#readme",
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
-    "alga-css": "^1.0.0-beta-49",
-    "alga-js": "^0.1.0-beta-14",
-    "alga-vue": "^0.0.1-stone-4",
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
     "vue-tsc": "^1.0.24",
